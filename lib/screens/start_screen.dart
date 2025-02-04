@@ -16,6 +16,7 @@ class _StartScreenState extends State<StartScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
+  // Used to write to firebase database
   void writeData() async {
     FirebaseFirestore.instance.collection('users').add({
       'First Name': _firstNameController.text,
@@ -25,6 +26,7 @@ class _StartScreenState extends State<StartScreen> {
     });
   }
 
+  // Used to check if there is something in all text fields
   bool _validateFields() {
     return _firstNameController.text.isNotEmpty &&
            _lastNameController.text.isNotEmpty &&
@@ -32,8 +34,9 @@ class _StartScreenState extends State<StartScreen> {
            _passwordController.text.isNotEmpty;
   }
 
+  // Forces UI update when text changes
   void _updateButtonState() {
-    setState(() {}); // Forces UI update when text changes
+    setState(() {}); 
   }
 
   @override
@@ -55,11 +58,12 @@ class _StartScreenState extends State<StartScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                // First Name Container
                 Container(
                   width: MediaQuery.of(context).size.width * 0.4,
                   padding: const EdgeInsets.all(10),
                   child: TextField(
-                    controller: _firstNameController, // ✅ FIXED
+                    controller: _firstNameController, 
                     onChanged: (text) => _updateButtonState(),
                     decoration: const InputDecoration(
                       border: OutlineInputBorder(),
@@ -67,11 +71,12 @@ class _StartScreenState extends State<StartScreen> {
                     ),
                   ),
                 ),
+                // Last Name Container
                 Container(
                   width: MediaQuery.of(context).size.width * 0.4,
                   padding: const EdgeInsets.all(10),
                   child: TextField(
-                    controller: _lastNameController, // ✅ FIXED
+                    controller: _lastNameController, 
                     onChanged: (text) => _updateButtonState(),
                     decoration: const InputDecoration(
                       border: OutlineInputBorder(),
@@ -81,11 +86,12 @@ class _StartScreenState extends State<StartScreen> {
                 ),
               ],
             ),
+            // Email Container
             Container(
               width: MediaQuery.of(context).size.width * 0.8,
               padding: const EdgeInsets.all(10),
               child: TextField(
-                controller: _emailController, // ✅ FIXED
+                controller: _emailController, 
                 onChanged: (text) => _updateButtonState(),
                 decoration: const InputDecoration(
                   border: OutlineInputBorder(),
@@ -93,6 +99,7 @@ class _StartScreenState extends State<StartScreen> {
                 ),
               ),
             ),
+            // Password Container
             Container(
               width: MediaQuery.of(context).size.width * 0.8,
               padding: const EdgeInsets.all(10),
@@ -100,7 +107,7 @@ class _StartScreenState extends State<StartScreen> {
                 children: [
                   Expanded(
                     child: TextField(
-                      controller: _passwordController, // ✅ FIXED
+                      controller: _passwordController, 
                       obscureText: _isSecure,
                       onChanged: (text) => _updateButtonState(),
                       decoration: const InputDecoration(
@@ -111,11 +118,11 @@ class _StartScreenState extends State<StartScreen> {
                   ),
                   IconButton(
                     icon: Icon(
-                      _isSecure ? Icons.remove_red_eye_outlined : Icons.remove_red_eye,
+                      _isSecure ? Icons.remove_red_eye_outlined : Icons.remove_red_eye, // Changes icon depending on state of _isSecure
                     ),
                     onPressed: () {
                       setState(() {
-                        _isSecure = !_isSecure;
+                        _isSecure = !_isSecure; // Change _isSecure
                       });
                     },
                   )
