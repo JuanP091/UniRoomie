@@ -1,14 +1,56 @@
-
 import 'package:flutter/material.dart';
+import 'package:uniroomie/screens/create_account_screen.dart';
+import 'package:uniroomie/screens/welcome_page_screen.dart';
+import 'package:uniroomie/services/auth_service.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final TextEditingController _emailController = TextEditingController();
-    final TextEditingController _passwordController = TextEditingController();
+  State<LoginScreen> createState() => _LoginScreenState();
+}
 
+class _LoginScreenState extends State<LoginScreen> {
+  final AuthService _authService = AuthService();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  bool _isLoading = false; // For showing a loading indicator
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _loginUser() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    var response = await _authService.loginUser(
+      _emailController.text,
+      _passwordController.text,
+    );
+
+    setState(() {
+      _isLoading = false;
+    });
+
+    if (response["success"]) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const WelcomePageScreen()),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(response["message"])),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Login')),
       body: Padding(
@@ -33,15 +75,18 @@ class LoginScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pushReplacementNamed(context, '/start');
-              },
-              child: const Text('Login'),
-            ),
+            _isLoading
+                ? const CircularProgressIndicator()
+                : ElevatedButton(
+                    onPressed: _loginUser,
+                    child: const Text('Login'),
+                  ),
             TextButton(
               onPressed: () {
-                Navigator.pushNamed(context, '/start');
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const CreateAccountScreen()),
+                );
               },
               child: const Text("Don't have an account? Sign Up"),
             ),

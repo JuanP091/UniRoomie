@@ -1,5 +1,3 @@
-// ignore_for_file: use_build_context_synchronously
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -15,10 +13,8 @@ class UserDecorationScreen extends StatefulWidget {
 class _UserDecorationScreenState extends State<UserDecorationScreen> {
   final TextEditingController _hobbyController = TextEditingController();
   final TextEditingController _majorController = TextEditingController();
-  final TextEditingController _universityController =
-      TextEditingController(); // Require this field
-  final TextEditingController _customGenderController =
-      TextEditingController(); // Require this field
+  final TextEditingController _universityController = TextEditingController(); // Require this field
+  final TextEditingController _customGenderController = TextEditingController(); // Require this field
   final TextEditingController _partyOrStudyController = TextEditingController();
 
   String? _selectedGender;
