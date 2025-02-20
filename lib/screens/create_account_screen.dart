@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:uniroomie/screens/user_decoration_screen.dart';
 import 'package:uniroomie/services/auth_service.dart'; 
-
+import 'package:uniroomie/screens/login_screen.dart';
 
 class CreateAccountScreen extends StatefulWidget {
   const CreateAccountScreen({super.key});
@@ -147,13 +147,39 @@ Widget build(BuildContext context) {
             padding: const EdgeInsets.all(10),
             child: SizedBox(
               width: MediaQuery.of(context).size.width * 1,
-              child: TextField(
-                controller: _emailController,
-                onChanged: (text) => _updateButtonState(),
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: "Email",
-                ),
+              child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(30),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Color.fromRGBO(0, 0, 0, 0.3),
+                          spreadRadius: 2,
+                          blurRadius: 5,
+                          offset: const Offset(0, 3),
+                        ),
+                      ],
+                    ),
+                    child: TextField(
+                      controller: _emailController,
+                      onChanged: (text) => _updateButtonState(),
+                      decoration: const InputDecoration(
+                            filled: true,  // Add this to fill the background
+                            fillColor: Colors.white,  // Make the background white
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.all(Radius.circular(30)), // Round the corners
+                            ),
+                            // Make all border states (enabled, focused, etc.) match the rounded style
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.all(Radius.circular(30)),
+                              borderSide: BorderSide(color: Colors.black),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.all(Radius.circular(30)),
+                              borderSide: BorderSide(color: Colors.orange),
+                            ),
+                            hintText: "Email",
+                      ),
+                    ),
               ),
             ),
           ),
@@ -190,12 +216,64 @@ Widget build(BuildContext context) {
             ),
           ),
           _isLoading
-              ? const CircularProgressIndicator()
-              : TextButton(
-                  onPressed: _validateFields() ? _registerUser : null,
-                  child: const Text("Create Account"),
+          ? const CircularProgressIndicator()
+          : Container(
+              width: 200, // Set a fixed width for the button
+              height: 50,  // Set a fixed height for the button
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(25), // Round edges
+                boxShadow: [
+                  BoxShadow(
+                    color: Color.fromRGBO(0, 0, 0, 0.3),
+                    spreadRadius: 1,
+                    blurRadius: 3,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: ElevatedButton(
+
+                onPressed: _validateFields() ? _registerUser : null,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: _validateFields() ? Colors.blue : Colors.grey,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(25),
+                  ),
+                  elevation: 0, // Remove default button elevation
                 ),
-        ],
+                
+                child: const Text(
+
+                  "Create Account",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+
+
+            // Already have an account text button
+          const SizedBox(height: 10),
+          TextButton(
+            onPressed: () {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => const LoginScreen()),
+              );
+            },
+            child: const Text(
+              "Already have an account?",
+              style: TextStyle(
+                //decoration: TextDecoration.underline,
+                color: Colors.white,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+          ],
       ),
     ),
   );
