@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:uniroomie/screens/user_decoration_screen.dart';
 import 'package:uniroomie/services/auth_service.dart'; 
+import 'package:uniroomie/screens/login_screen.dart';
+
 class CreateAccountScreen extends StatefulWidget {
   const CreateAccountScreen({super.key});
   @override
@@ -219,7 +221,7 @@ Widget build(BuildContext context) {
                               borderSide: BorderSide(color: Colors.orange),
                             ),
                             hintText: "Email",
-                          ),
+                      ),
                     ),
               ),
             ),
@@ -322,6 +324,26 @@ Widget build(BuildContext context) {
                 ),
               ),
             ),
+
+
+            // Already have an account text button
+          const SizedBox(height: 10),
+          TextButton(
+            onPressed: () {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => const LoginScreen()),
+              );
+            },
+            child: const Text(
+              "Already have an account?",
+              style: TextStyle(
+                //decoration: TextDecoration.underline,
+                color: Colors.white,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
           ],
       ),
     ),
