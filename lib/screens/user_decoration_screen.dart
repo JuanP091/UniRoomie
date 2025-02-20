@@ -112,163 +112,405 @@ class _UserDecorationScreenState extends State<UserDecorationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: SingleChildScrollView(
-      child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            // Gender Drop Down
-            const Text("Gender:", style: TextStyle(fontSize: 20)),
-            Padding(
-              padding: const EdgeInsets.all(10),
-              child: DropdownButtonFormField<String>(
-                value: _selectedGender,
-                hint: const Text("Select Gender"),
-                isExpanded: true,
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  contentPadding:
-                      EdgeInsets.symmetric(horizontal: 10, vertical: 12),
+      backgroundColor: Colors.orange[800],
+      body: SingleChildScrollView(
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 30.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text(
+                  "Tell us about yourself", 
+                  style: TextStyle(
+                    fontSize: 28, 
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white
+                  )
                 ),
-                // Display Male , Female , and Other
-                items: genderOptions.map((String gender) {
-                  return DropdownMenuItem<String>(
-                    value: gender,
-                    child: Text(gender),
-                  );
-                }).toList(),
-                onChanged: (String? value) {
-                  setState(() {
-                    _selectedGender = value;
-                    if (value != "Other") {
-                      _customGenderController
-                          .clear(); // clear controller if user chooses male or female
-                    }
-                  });
-                },
-              ),
-            ),
-            // Give user option to choose other and specify their gender
-            if (_selectedGender == "Other")
-              Padding(
-                padding: const EdgeInsets.all(10),
-                child: TextField(
-                  controller: _customGenderController,
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: "Specify Gender",
+                const SizedBox(height: 20),
+                
+                // Gender Drop Down
+
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text("*", 
+                      style: TextStyle(fontSize: 20, color: Color.fromARGB(255, 123, 0, 0), fontWeight: FontWeight.w500),
+                    ),
+                    Text("Gender:", 
+                      style: TextStyle(fontSize: 20, color: Colors.white, fontWeight: FontWeight.w500),
+                    ),
+                  ],
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(10),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(30),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Color.fromRGBO(0, 0, 0, 0.3),
+                          spreadRadius: 2,
+                          blurRadius: 5,
+                          offset: const Offset(0, 3),
+                        ),
+                      ],
+                    ),
+                    child: DropdownButtonFormField<String>(
+                      value: _selectedGender,
+                      hint: const Text("Select Gender"),
+                      isExpanded: true,
+                      decoration: const InputDecoration(
+                        filled: true,
+                        fillColor: Colors.white,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(30)),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(30)),
+                          borderSide: BorderSide(color: Colors.black),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(30)),
+                          borderSide: BorderSide(color: Colors.orange),
+                        ),
+                        contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                      ),
+                      items: genderOptions.map((String gender) {
+                        return DropdownMenuItem<String>(
+                          value: gender,
+                          child: Text(gender),
+                        );
+                      }).toList(),
+                      onChanged: (String? value) {
+                        setState(() {
+                          _selectedGender = value;
+                          if (value != "Other") {
+                            _customGenderController.clear();
+                          }
+                        });
+                      },
+                    ),
                   ),
                 ),
-              ),
+                
+                // Custom Gender Field (conditionally displayed)
+                if (_selectedGender == "Other")
+                  Padding(
+                    padding: const EdgeInsets.all(10),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(30),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Color.fromRGBO(0, 0, 0, 0.3),
+                            spreadRadius: 2,
+                            blurRadius: 5,
+                            offset: const Offset(0, 3),
+                          ),
+                        ],
+                      ),
+                      child: TextField(
+                        controller: _customGenderController,
+                        decoration: const InputDecoration(
+                          filled: true,
+                          fillColor: Colors.white,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(30)),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(30)),
+                            borderSide: BorderSide(color: Colors.black),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(30)),
+                            borderSide: BorderSide(color: Colors.orange),
+                          ),
+                          floatingLabelBehavior: FloatingLabelBehavior.never,
+                          hintText: "Specify Gender",
+                        ),
+                      ),
+                    ),
+                  ),
+
             // University Field
-            const Text("University:", style: TextStyle(fontSize: 20)),
+             Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text("*", 
+                      style: TextStyle(fontSize: 20, color: Color.fromARGB(255, 123, 0, 0), fontWeight: FontWeight.w500),
+                    ),
+                    Text("University:", 
+                      style: TextStyle(fontSize: 20, color: Colors.white, fontWeight: FontWeight.w500),
+                    ),
+                  ],
+                ),
             Padding(
               padding: const EdgeInsets.all(10),
-              child: TextField(
-                controller: _universityController,
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: "Input your University!",
+              child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(30),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Color.fromRGBO(0, 0, 0, 0.3),
+                          spreadRadius: 2,
+                          blurRadius: 5,
+                          offset: const Offset(0, 3),
+                        ),
+                      ],
+                    ),
+                child: TextField(
+                  controller: _universityController,
+                  decoration: const InputDecoration(
+                            filled: true,
+                            fillColor: Colors.white,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.all(Radius.circular(30)),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.all(Radius.circular(30)),
+                              borderSide: BorderSide(color: Colors.black),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.all(Radius.circular(30)),
+                              borderSide: BorderSide(color: Colors.orange),
+                            ),
+                            floatingLabelBehavior: FloatingLabelBehavior.never,
+                            hintText: "Input your University!",
+                          ),
                 ),
               ),
             ),
             // Major Field
-            const Text("Major:", style: TextStyle(fontSize: 20)),
+            const Text("Major:", style: TextStyle(fontSize: 20, color: Colors.white, fontWeight: FontWeight.w500)),
             Padding(
               padding: const EdgeInsets.all(10),
-              child: TextField(
-                controller: _majorController,
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: "Input Your Major!",
+              child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(30),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Color.fromRGBO(0, 0, 0, 0.3),
+                          spreadRadius: 2,
+                          blurRadius: 5,
+                          offset: const Offset(0, 3),
+                        ),
+                      ],
+                    ),
+                child: TextField(
+                  controller: _majorController,
+                  decoration: const InputDecoration(
+                            filled: true,
+                            fillColor: Colors.white,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.all(Radius.circular(30)),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.all(Radius.circular(30)),
+                              borderSide: BorderSide(color: Colors.black),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.all(Radius.circular(30)),
+                              borderSide: BorderSide(color: Colors.orange),
+                            ),
+                            floatingLabelBehavior: FloatingLabelBehavior.never,
+                            hintText: "Input your Major!",
+                          ),
                 ),
               ),
             ),
             // Sleep schedule dropdown
             const Text("Night Owl or Morning Person? :",
-                style: TextStyle(fontSize: 20)),
+                style: TextStyle(fontSize: 20, color: Colors.white, fontWeight: FontWeight.w500)),
             Padding(
               padding: const EdgeInsets.all(10),
-              child: DropdownButtonFormField<String>(
-                value: _selectedSchedule,
-                hint: const Text("Preferred Schedule"),
-                isExpanded: true,
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  contentPadding:
-                      EdgeInsets.symmetric(horizontal: 10, vertical: 12),
+              child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(30),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Color.fromRGBO(0, 0, 0, 0.3),
+                          spreadRadius: 2,
+                          blurRadius: 5,
+                          offset: const Offset(0, 3),
+                        ),
+                      ],
+                    ),
+                child: DropdownButtonFormField<String>(
+                  value: _selectedSchedule,
+                  hint: const Text("Preferred Schedule"),
+                  isExpanded: true,
+                  decoration: const InputDecoration(
+                          filled: true,
+                          fillColor: Colors.white,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(30)),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(30)),
+                            borderSide: BorderSide(color: Colors.black),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(30)),
+                            borderSide: BorderSide(color: Colors.orange),
+                          ),
+                          contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                        ),
+                  items: sleepScheduleOptions.map((String option) {
+                    return DropdownMenuItem<String>(
+                      value: option,
+                      child: Text(option),
+                    );
+                  }).toList(),
+                  onChanged: (String? value) {
+                    setState(() {
+                      _selectedSchedule = value;
+                    });
+                  },
                 ),
-                items: sleepScheduleOptions.map((String option) {
-                  return DropdownMenuItem<String>(
-                    value: option,
-                    child: Text(option),
-                  );
-                }).toList(),
-                onChanged: (String? value) {
-                  setState(() {
-                    _selectedSchedule = value;
-                  });
-                },
               ),
             ),
             // Party or study drop down
-            const Text("Party Animal or Book Worm? :", style: TextStyle(fontSize: 20)),
+            const Text("Party Animal or Book Worm? :", 
+              style: TextStyle(fontSize: 20, color: Colors.white, fontWeight: FontWeight.w500)),
             Padding(
               padding: const EdgeInsets.all(10),
-              child: DropdownButtonFormField<String>(
-                value: _partyOrStudy,
-                hint: const Text("Party or Study?"),
-                isExpanded: true,
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  contentPadding:
-                      EdgeInsets.symmetric(horizontal: 10, vertical: 12),
+              child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(30),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Color.fromRGBO(0, 0, 0, 0.3),
+                          spreadRadius: 2,
+                          blurRadius: 5,
+                          offset: const Offset(0, 3),
+                        ),
+                      ],
+                    ),
+                child: DropdownButtonFormField<String>(
+                  value: _partyOrStudy,
+                  hint: const Text("Party or Study?"),
+                  isExpanded: true,
+                  decoration: const InputDecoration(
+                          filled: true,
+                          fillColor: Colors.white,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(30)),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(30)),
+                            borderSide: BorderSide(color: Colors.black),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(30)),
+                            borderSide: BorderSide(color: Colors.orange),
+                          ),
+                          contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                        ),
+                  items: partyOrStudyOptions.map((String option) {
+                    return DropdownMenuItem<String>(
+                      value: option,
+                      child: Text(option),
+                    );
+                  }).toList(),
+                  onChanged: (String? value) {
+                    setState(() {
+                      _partyOrStudy = value;
+                    });
+                  },
                 ),
-                items: partyOrStudyOptions.map((String option) {
-                  return DropdownMenuItem<String>(
-                    value: option,
-                    child: Text(option),
-                  );
-                }).toList(),
-                onChanged: (String? value) {
-                  setState(() {
-                    _partyOrStudy = value;
-                  });
-                },
               ),
             ),
             // Hobbies Field
-            const Text("Hobbies:", style: TextStyle(fontSize: 20)),
+            const Text("Hobbies:", 
+              style: TextStyle(fontSize: 20, color: Colors.white, fontWeight: FontWeight.w500)),
             Padding(
               padding: const EdgeInsets.all(10),
-              child: TextField(
-                controller: _hobbyController,
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: "Add Hobbies seperate with comma!",
+              child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(30),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Color.fromRGBO(0, 0, 0, 0.3),
+                          spreadRadius: 2,
+                          blurRadius: 5,
+                          offset: const Offset(0, 3),
+                        ),
+                      ],
+                    ),
+                child: TextField(
+                  controller: _hobbyController,
+                  decoration: const InputDecoration(
+                            filled: true,
+                            fillColor: Colors.white,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.all(Radius.circular(30)),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.all(Radius.circular(30)),
+                              borderSide: BorderSide(color: Colors.black),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.all(Radius.circular(30)),
+                              borderSide: BorderSide(color: Colors.orange),
+                            ),
+                            floatingLabelBehavior: FloatingLabelBehavior.never,
+                            hintText: "Add Hobbies seperate with a comma!",
+                          ),
                 ),
               ),
             ),
+            // Button at the end
+            const SizedBox(height: 20),
             Padding(
               padding: const EdgeInsets.all(10),
-              child: TextButton(
-                onPressed:
-                    _validateRequiredFields() // checks that required fields are filled if not disables button
-                        ? () async {
-                            Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) =>
-                                      const WelcomePageScreen()),
-                            );
-                            await _updateUserProfile();
-                          }
-                        : null,
-                child: const Text("Decorate Account!"),
+              child: Container(
+                width: 200,
+                height: 50,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(25),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Color.fromRGBO(0, 0, 0, 0.3),
+                      spreadRadius: 1,
+                      blurRadius: 3,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: ElevatedButton(
+                  onPressed: _validateRequiredFields()
+                      ? () async {
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const WelcomePageScreen()),
+                          );
+                          await _updateUserProfile();
+                        }
+                      : null,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: _validateRequiredFields() ? Colors.blue : Colors.grey,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(25),
+                    ),
+                    elevation: 0,
+                  ),
+                  child: const Text(
+                    "Decorate Account!",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
               ),
             ),
           ],
         ),
+      ),
       ),
     ));
   }
