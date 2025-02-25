@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 
 class LoginScreen extends StatelessWidget {
@@ -32,7 +31,19 @@ class LoginScreen extends StatelessWidget {
                 labelText: 'Password',
               ),
             ),
+            const SizedBox(height: 10),
+            Align(
+              alignment: Alignment.centerRight,
+              child: TextButton(
+                onPressed: () {
+                  Navigator.pushNamed(context, '/recover');
+                },
+                child: const Text("Forgot Password?"),
+              ),
+            ),
+
             const SizedBox(height: 20),
+
             ElevatedButton(
               onPressed: () {
                 Navigator.pushReplacementNamed(context, '/start');
