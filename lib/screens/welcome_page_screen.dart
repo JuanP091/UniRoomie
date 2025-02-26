@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:uniroomie/services/auth_service.dart';
 
 class WelcomePageScreen extends StatefulWidget {
   const WelcomePageScreen({super.key});
@@ -11,8 +10,6 @@ class WelcomePageScreen extends StatefulWidget {
 }
 
 class _WelcomePageScreenState extends State<WelcomePageScreen> {
-  final AuthService _authService = AuthService();
-
   String firstName = "Loading...";
   String lastName = "";
 
