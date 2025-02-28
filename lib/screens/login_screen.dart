@@ -43,13 +43,7 @@ class LoginScreen extends StatelessWidget {
             ),
 
             const SizedBox(height: 20),
-
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pushReplacementNamed(context, '/start');
-              },
-              child: const Text('Login'),
-            ),
+            
             TextButton(
               onPressed: () {
                 Navigator.pushNamed(context, '/start');
@@ -62,5 +56,7 @@ class LoginScreen extends StatelessWidget {
     );
   }
 }
+
+
 
 
