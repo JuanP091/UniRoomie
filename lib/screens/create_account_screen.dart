@@ -5,22 +5,18 @@ import 'package:uniroomie/screens/login_screen.dart';
 
 class CreateAccountScreen extends StatefulWidget {
   const CreateAccountScreen({super.key});
-
   @override
   State<CreateAccountScreen> createState() => _CreateAccountScreenState();
 }
-
 class _CreateAccountScreenState extends State<CreateAccountScreen> {
   final AuthService _authService = AuthService();
   bool _isSecure = true;
   bool _isLoading = false; // To show loading state
-
   final bool _isadmin = false;
   final TextEditingController _firstNameController = TextEditingController();
   final TextEditingController _lastNameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-
   // Function to validate email format
   bool _isValidEmail(String email) {
     final RegExp emailRegex = RegExp(
@@ -28,8 +24,6 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
     );
     return emailRegex.hasMatch(email);
   }
-
-
   // Function to register user with Firebase Authentication
   Future<void> _registerUser() async {
     if (!_isValidEmail(_emailController.text)) {
@@ -38,7 +32,6 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
       );
       return;
     }
-
   // Function to check length of password to make sure it is over 6 characters long
     if (_passwordController.text.length < 6) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -46,11 +39,9 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
       );
       return;
     }
-
     setState(() {
       _isLoading = true;
     });
-
     // Waits for firebase auth to register user to database
     String? error = await _authService.registerUser(
       _firstNameController.text,
@@ -59,11 +50,9 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
       _passwordController.text,
       _isadmin,
     );
-
     setState(() {
       _isLoading = false;
     });
-
     // If we get no error we will ensure that the user knows their account was created and lead them to decoration page
     if (error == null) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -79,7 +68,6 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
       );
     }
   }
-
   // Makes sure that all fields are not empty
   bool _validateFields() {
     return _firstNameController.text.isNotEmpty &&
@@ -87,11 +75,9 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
         _emailController.text.isNotEmpty &&
         _passwordController.text.isNotEmpty;
   }
-
   void _updateButtonState() {
     setState(() {}); // Forces UI update when text changes
   }
-
   
   @override
   void dispose() {
@@ -101,14 +87,20 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
     _passwordController.dispose();
     super.dispose();
   }
-
   @override
 Widget build(BuildContext context) {
   return Scaffold(
+    backgroundColor: Colors.orange[800],
     body: Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
+          Image.asset(
+            'assets/images/logo.png',
+            width: 200,
+            height: 200,
+            fit: BoxFit.cover,
+          ),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -116,12 +108,38 @@ Widget build(BuildContext context) {
               Flexible(
                 child: Padding(
                   padding: const EdgeInsets.all(10),
-                  child: TextField(
-                    controller: _firstNameController,
-                    onChanged: (text) => _updateButtonState(),
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: "First Name",
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(30),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Color.fromRGBO(0, 0, 0, 0.3),
+                          spreadRadius: 2,
+                          blurRadius: 5,
+                          offset: const Offset(0, 3),
+                        ),
+                      ],
+                    ),
+                    child: TextField(
+                      controller: _firstNameController,
+                      onChanged: (text) => _updateButtonState(),
+                      decoration: const InputDecoration(
+                        filled: true,  // fill the background
+                        fillColor: Colors.white,  // Make the input background white
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(30)), // Round the corners
+                        ),
+                        // Make all border states (enabled, focused, etc.) match the rounded style
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(30)),
+                          borderSide: BorderSide(color: Colors.black),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(30)),
+                          borderSide: BorderSide(color: Colors.orange),
+                        ),
+                        hintText: "First Name",
+                      ),
                     ),
                   ),
                 ),
@@ -130,12 +148,37 @@ Widget build(BuildContext context) {
               Flexible(
                 child: Padding(
                   padding: const EdgeInsets.all(10),
-                  child: TextField(
-                    controller: _lastNameController,
-                    onChanged: (text) => _updateButtonState(),
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: "Last Name",
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(30),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Color.fromRGBO(0, 0, 0, 0.3),
+                          spreadRadius: 2,
+                          blurRadius: 5,
+                          offset: const Offset(0, 3),
+                        ),
+                      ],
+                    ),
+                    child: TextField(
+                      controller: _lastNameController,
+                      decoration: const InputDecoration(
+                        filled: true,  // Add this to fill the background
+                        fillColor: Colors.white,  // Make the background white
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(30)), // Round the corners
+                        ),
+                        // Make all border states (enabled, focused, etc.) match the rounded style
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(30)),
+                          borderSide: BorderSide(color: Colors.black),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(30)),
+                          borderSide: BorderSide(color: Colors.orange),
+                        ),
+                        hintText: "Last Name",
+                      ),
                     ),
                   ),
                 ),
@@ -183,7 +226,9 @@ Widget build(BuildContext context) {
               ),
             ),
           ),
-          // Password Field
+
+          // Password Field ----------------------------
+
           Padding(
             padding: const EdgeInsets.all(10),
             child: SizedBox(
@@ -191,13 +236,38 @@ Widget build(BuildContext context) {
               child: Row(
                 children: [
                   Expanded(
-                    child: TextField(
-                      controller: _passwordController,
-                      obscureText: _isSecure,
-                      onChanged: (text) => _updateButtonState(),
-                      decoration: const InputDecoration(
-                        border: OutlineInputBorder(),
-                        labelText: "Password",
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(30),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Color.fromRGBO(0, 0, 0, 0.3),
+                            spreadRadius: 2,
+                            blurRadius: 5,
+                            offset: const Offset(0, 3),
+                          ),
+                        ],
+                      ),
+                      child: TextField(
+                        controller: _passwordController,
+                        obscureText: _isSecure,
+                        onChanged: (text) => _updateButtonState(),
+                        decoration: const InputDecoration(
+                          filled: true,
+                          fillColor: Colors.white,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(30)),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(30)),
+                            borderSide: BorderSide(color: Colors.black),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(30)),
+                            borderSide: BorderSide(color: Colors.orange),
+                          ),
+                          hintText: "Password",
+                        ),
                       ),
                     ),
                   ),
@@ -215,6 +285,7 @@ Widget build(BuildContext context) {
               ),
             ),
           ),
+          const SizedBox(height: 20),
           _isLoading
           ? const CircularProgressIndicator()
           : Container(
