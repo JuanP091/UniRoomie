@@ -1,31 +1,28 @@
+// ignore_for_file: use_build_context_synchronously
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:uniroomie/screens/welcome_page_screen.dart';
-
 class UserDecorationScreen extends StatefulWidget {
   const UserDecorationScreen({super.key});
-
   @override
   State<UserDecorationScreen> createState() => _UserDecorationScreenState();
 }
-
 class _UserDecorationScreenState extends State<UserDecorationScreen> {
   final TextEditingController _hobbyController = TextEditingController();
   final TextEditingController _majorController = TextEditingController();
-  final TextEditingController _universityController = TextEditingController(); // Require this field
-  final TextEditingController _customGenderController = TextEditingController(); // Require this field
+  final TextEditingController _universityController =
+      TextEditingController(); // Require this field
+  final TextEditingController _customGenderController =
+      TextEditingController(); // Require this field
   final TextEditingController _partyOrStudyController = TextEditingController();
-
   String? _selectedGender;
   String? _selectedSchedule;
   String? _partyOrStudy;
-
   List<String> genderOptions = ["Male", "Female", "Other"];
   List<String> sleepScheduleOptions = ["Night Owl", "Morning Person"];
   List<String> partyOrStudyOptions = ["Party", "Study"];
   List<String> hobbies = [];
-
   @override
   void initState() {
     super.initState();
@@ -36,7 +33,6 @@ class _UserDecorationScreenState extends State<UserDecorationScreen> {
       setState(() {}); // Ensures the button updates when custom gender changes
     });
   }
-
   @override
   void dispose() {
     _hobbyController.dispose();
@@ -46,7 +42,6 @@ class _UserDecorationScreenState extends State<UserDecorationScreen> {
     _partyOrStudyController.dispose();
     super.dispose();
   }
-
   // Function to check that required fields are filled
   bool _validateRequiredFields() {
     bool isGenderValid = (_selectedGender != null &&
@@ -54,7 +49,6 @@ class _UserDecorationScreenState extends State<UserDecorationScreen> {
         (_selectedGender == "Other" && _customGenderController.text.isNotEmpty);
     return _universityController.text.isNotEmpty && isGenderValid;
   }
-
   // Will refactor into auth_service later
   Future<void> _updateUserProfile() async {
     try {
@@ -63,25 +57,21 @@ class _UserDecorationScreenState extends State<UserDecorationScreen> {
         return;
       } else {
         String uid = user.uid;
-
         // check if gender is predefined or other
         String genderToStore = _selectedGender == "Other"
             ? _customGenderController.text
             : _selectedGender ?? "";
-
         List<String> newHobbies = _hobbyController.text
             .split(',')
             .map((hobby) => hobby.trim()) // Trim spaces
             .where((hobby) => hobby.isNotEmpty) // Remove empty strings
             .toSet() // Remove duplicates
             .toList();
-
         setState(() {
           hobbies.addAll(newHobbies.where((hobby) =>
               !hobbies.contains(hobby))); // Append only unique hobbies
           _hobbyController.clear(); // Clear input field
         });
-
         Map<String, dynamic> userData = {
           "hobbies": hobbies,
           "major": _majorController.text,
@@ -90,14 +80,11 @@ class _UserDecorationScreenState extends State<UserDecorationScreen> {
           "partyOrStudy": _partyOrStudy ?? "",
           "gender": genderToStore
         };
-
         // Reference the user's document in firebase
         DocumentReference userRef =
             FirebaseFirestore.instance.collection('users').doc(uid);
-
         // Update user document
         await userRef.update(userData);
-
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("Profile updated successfully!")),
         );
@@ -108,7 +95,6 @@ class _UserDecorationScreenState extends State<UserDecorationScreen> {
       );
     }
   }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
