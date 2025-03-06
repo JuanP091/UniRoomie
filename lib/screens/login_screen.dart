@@ -15,7 +15,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final AuthService _authService = AuthService();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  bool _isLoading = false; // For showing a loading indicator
+  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -82,7 +82,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const RecoverAccountScreen()), // Updated screen reference
+                    MaterialPageRoute(builder: (context) => const RecoverAccountScreen()),
                   );
                 },
                 child: const Text("Forgot Password?"),
