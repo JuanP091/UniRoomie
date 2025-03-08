@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:uniroomie/screens/create_account_screen.dart';
+import 'package:uniroomie/screens/recovery_screen.dart';
 import 'package:uniroomie/screens/welcome_page_screen.dart';
 import 'package:uniroomie/services/auth_service.dart';
 
@@ -51,18 +52,18 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    
     return Scaffold(
       backgroundColor: Colors.orange[800],
       appBar: AppBar(
         backgroundColor: Colors.orange[800], // Match the background color
         elevation: 0, // Removes the shadow under the app bar
-        title: const Text('Login',
-        style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                ),
+        title: const Text(
+          'Login',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 28,
+            fontWeight: FontWeight.bold,
+          ),
         ),
       ),
       body: Padding(
@@ -142,6 +143,21 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
             ),
+            const SizedBox(height: 10),
+            TextButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const RecoverAccountScreen()),
+                );
+              },
+              child: const Text("Forgot Password?",
+              style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w500,
+              )),
+            ),
             const SizedBox(height: 20),
             _isLoading
                 ? const CircularProgressIndicator()
@@ -178,13 +194,13 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
                   ),
-                
             const SizedBox(height: 10),
             TextButton(
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const CreateAccountScreen()),
+                  MaterialPageRoute(
+                      builder: (context) => const CreateAccountScreen()),
                 );
               },
               child: const Text(
