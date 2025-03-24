@@ -1,2 +1,0 @@
-/Users/juan/Desktop/uniroomie/android/app/.cxx/Debug/3ny6e6m5/x86/CMakeFiles/edit_cache.dir
-/Users/juan/Desktop/uniroomie/android/app/.cxx/Debug/3ny6e6m5/x86/CMakeFiles/rebuild_cache.dir
