@@ -15,6 +15,8 @@ class ProfileDetailScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Text("City: ${profile.city}, ${profile.state}", style: TextStyle(fontSize: 18)),
+            const SizedBox(height: 8),
             Text("University: ${profile.university}", style: TextStyle(fontSize: 18)),
             const SizedBox(height: 8),
             Text("Major: ${profile.major}", style: TextStyle(fontSize: 18)),
