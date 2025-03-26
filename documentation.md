@@ -63,5 +63,33 @@ Week 6(Feb.24 \- Mar.2)
 \-I’m working on the login feature i'll get it done by today if not tomorrow
 
 Week 7(Mar.4 \- 9\)  
-\-TBD
+-Met with advisor and were told we should recommend profiles to a user based on location; using a zip code api
+-Discussed amongst group members: how we wanted to tackle matchmaking in the app, we decided on a swipe feature. Weather pictures of the users would be required, we decided to make it optional. 
+-link documentation sheet added to repo, along with text.
+-main branch updated, app now lets a user login and view their profile. 
+
+Week 8(Mar.10 - 16)
+-No meeting
+-Decided We needed mockup for how the swipe features would look 
+-Progress made on adding the zip code api
+-Worked on adding the swiping feature
+-Started the poster board for the presentation(https://utrgv-my.sharepoint.com/:p:/g/personal/oscar_juarez03_utrgv_edu/EUp478kLpPdJrVAAeUHR4I8BIx91kKZfizkK3gnYN4LL-A?e=o3zhLL). 
+
+Week 9(Mar.17 - 23)
+Spring break
+-No meeting
+-Focus on presentation demo, and poster
+
+Week 10(Mar.24 - 30)
+- Held Meeting; our advisor approved our poster, Gave the idea that the apps color scheme should change depending on each universities distinked colors. 
+- zip code api working
+- Printed poster at University library 
+- Demo ready for presentation
+- Discussed adding things like leaving the zip code feature in the demo if we finish it before the presentation, and making demo student accounts, if time permits.  
+- Issue discovered: we have a limited number of api calls(used to create accounts and show profiles)  10 an hour or so. Solution: while in development, just wait it out, this will slow us down but not to a great degree. 
+
+Week 11(Mar.31- April.6)
+ - TBD
+
+
 
