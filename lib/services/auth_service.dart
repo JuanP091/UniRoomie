@@ -6,7 +6,7 @@ class AuthService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   // Register User to Firebase
-  Future<String?> registerUser(String firstName, String lastName, String email, String password, bool isadmin) async {
+  Future<String?> registerUser(String firstName, String lastName, String email, String password, bool isadmin, String zipcode ,String city, String state) async {
     try {
       UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
         email: email,
@@ -22,6 +22,9 @@ class AuthService {
         'UID': uid,
         'Created At': Timestamp.now(),
         'admin' : isadmin,
+        'Zipcode' : zipcode,
+        'City' : city,
+        'State' : state,
       });
 
       return null; // No error, user created successfully

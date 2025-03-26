@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:uniroomie/screens/user_decoration_screen.dart';
-import 'package:uniroomie/services/auth_service.dart'; 
 import 'package:uniroomie/screens/login_screen.dart';
+import 'package:uniroomie/screens/user_decoration_screen.dart';
+import 'package:uniroomie/services/auth_service.dart';
+import 'package:uniroomie/services/zipcode_service.dart';
 
 class CreateAccountScreen extends StatefulWidget {
   const CreateAccountScreen({super.key});
@@ -10,6 +11,8 @@ class CreateAccountScreen extends StatefulWidget {
 }
 class _CreateAccountScreenState extends State<CreateAccountScreen> {
   final AuthService _authService = AuthService();
+  final ZipcodeService = ZipcodeApiService();
+
   bool _isSecure = true;
   bool _isLoading = false; // To show loading state
   final bool _isadmin = false;
@@ -17,6 +20,7 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
   final TextEditingController _lastNameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _zipcodeController = TextEditingController();
   // Function to validate email format
   bool _isValidEmail(String email) {
     final RegExp emailRegex = RegExp(
@@ -39,6 +43,21 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
       );
       return;
     }
+  // Check if we are given a correct amount of character for the zipcode
+    if(_zipcodeController.text.length != 5) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Zipcode must be 5 characters long"))
+      );
+      return;
+    }
+  // Checks if given an existing zipcode
+    if(ZipcodeService.getCityByZip(_zipcodeController.text) == 'Failed to get city info') {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Zipcode does not exist"))
+      );
+      return;
+    }
+
     setState(() {
       _isLoading = true;
     });
@@ -49,6 +68,9 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
       _emailController.text,
       _passwordController.text,
       _isadmin,
+      _zipcodeController.text,
+      await ZipcodeService.getCityByZip(_zipcodeController.text),
+      await ZipcodeService.getStateByZip(_zipcodeController.text),
     );
     setState(() {
       _isLoading = false;
@@ -73,8 +95,10 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
     return _firstNameController.text.isNotEmpty &&
         _lastNameController.text.isNotEmpty &&
         _emailController.text.isNotEmpty &&
-        _passwordController.text.isNotEmpty;
+        _passwordController.text.isNotEmpty && 
+        _zipcodeController.text.isNotEmpty;
   }
+
   void _updateButtonState() {
     setState(() {}); // Forces UI update when text changes
   }
@@ -85,6 +109,7 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
     _lastNameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
+    _zipcodeController.dispose();
     super.dispose();
   }
   @override
@@ -221,6 +246,47 @@ Widget build(BuildContext context) {
                               borderSide: BorderSide(color: Colors.orange),
                             ),
                             hintText: "Email",
+                      ),
+                    ),
+              ),
+            ),
+          ),
+
+          Padding(
+            padding: const EdgeInsets.all(10),
+            child: SizedBox(
+              width: MediaQuery.of(context).size.width * 1,
+              child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(30),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Color.fromRGBO(0, 0, 0, 0.3),
+                          spreadRadius: 2,
+                          blurRadius: 5,
+                          offset: const Offset(0, 3),
+                        ),
+                      ],
+                    ),
+                    child: TextField(
+                      controller: _zipcodeController,
+                      onChanged: (text) => _updateButtonState(),
+                      decoration: const InputDecoration(
+                            filled: true,  // Add this to fill the background
+                            fillColor: Colors.white,  // Make the background white
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.all(Radius.circular(30)), // Round the corners
+                            ),
+                            // Make all border states (enabled, focused, etc.) match the rounded style
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.all(Radius.circular(30)),
+                              borderSide: BorderSide(color: Colors.black),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.all(Radius.circular(30)),
+                              borderSide: BorderSide(color: Colors.orange),
+                            ),
+                            hintText: "Enter Zipcode",
                       ),
                     ),
               ),
