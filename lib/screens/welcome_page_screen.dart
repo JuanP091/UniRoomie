@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:uniroomie/screens/profile_listing_screen.dart';
+import 'package:uniroomie/screens/swipe_screen.dart';
 
 class WelcomePageScreen extends StatefulWidget {
   const WelcomePageScreen({super.key});
@@ -30,8 +31,6 @@ class _WelcomePageScreenState extends State<WelcomePageScreen> {
           firstName = data['First Name'] ?? "Unknown";
           lastName = data['Last Name'] ?? "Unknown";
         });
-      } else {
-        // User does not exist
       }
     }
   }
@@ -45,19 +44,37 @@ class _WelcomePageScreenState extends State<WelcomePageScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: Center(
-            child: Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Text("Welcome, $firstName $lastName",
-            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-        TextButton(
-          onPressed: () {
-            Navigator.push(context, MaterialPageRoute(builder: (context) => const ProfileListingScreen()));
-          },
-          child: const Text("View Profiles")
-        )
-      ],
-    )));
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              "Welcome, $firstName $lastName",
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const ProfileListingScreen()),
+                );
+              },
+              child: const Text("View Profiles"),
+            ),
+            const SizedBox(height: 10),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const ProfileSwipeScreen()),
+                );
+              },
+              child: const Text("Swipe Profiles"),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
