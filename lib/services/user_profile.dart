@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:uniroomie/services/zipcode_service.dart';
 
 class UserProfile {
   final String firstName;
@@ -12,7 +11,6 @@ class UserProfile {
   final List<String> hobbies;
   final String gender;
   final String uid;
-  final String zipcode;
   final String city;
   final String state;
 
@@ -26,7 +24,6 @@ class UserProfile {
     required this.hobbies,
     required this.gender,
     required this.uid,
-    required this.zipcode,
     required this.city,
     required this.state,
   });
@@ -41,7 +38,6 @@ class UserProfile {
       partyOrStudy: doc['partyOrStudy'] ?? '',
       hobbies: List<String>.from(doc['hobbies'] ?? []),
       gender: doc['gender'] ?? '',
-      zipcode: doc['Zipcode'] ?? '',
       city: doc['City'] ?? '',
       state: doc['State'] ?? '',
     );
@@ -49,7 +45,6 @@ class UserProfile {
 }
 
 class UserProfileService {
-  final ZipcodeService = ZipcodeApiService();
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
@@ -80,7 +75,7 @@ class UserProfileService {
         otherProfiles.add(profile);
       }
     }
-
+/*
     if (currentUserProfile == null) {
       throw Exception("Current user profile not found in Firestore.");
     }
@@ -96,10 +91,10 @@ class UserProfileService {
         filteredProfiles.add(profile);
       }
     }
-
+*/
     return {
       "currentUserProfile": currentUserProfile,
-      "otherProfiles": filteredProfiles,
+      "otherProfiles": otherProfiles,
     };
   }
 }
