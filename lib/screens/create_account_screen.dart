@@ -115,6 +115,8 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
         _isadmin,
         city,
         state,
+        position!.latitude,
+        position!.longitude,
       );
 
       setState(() {
@@ -308,27 +310,6 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                 ),
               ),
             ),
-
-            Padding(
-              padding: const EdgeInsets.all(10),
-              child: SizedBox(
-                width: MediaQuery.of(context).size.width * 1,
-                child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(30),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Color.fromRGBO(0, 0, 0, 0.3),
-                        spreadRadius: 2,
-                        blurRadius: 5,
-                        offset: const Offset(0, 3),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-
             // Password Field ----------------------------
 
             Padding(

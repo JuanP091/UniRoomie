@@ -1,14 +1,14 @@
 import 'dart:convert';
 
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 
 class GeocodingApi {
-  final apiKey = 'AIzaSyBxbabTned6lo_eQj1vu917c5R5t9X_zQ0';
+  final apiKey = dotenv.env['GEOCODING_API_KEY'];
+
   
-  Future<Map<String, String>> getCityAndState(
-    double latitude, double longitude) async {
-  final url =
-      'https://maps.googleapis.com/maps/api/geocode/json?latlng=$latitude,$longitude&key=$apiKey';
+  Future<Map<String, String>> getCityAndState(double latitude, double longitude) async {
+  final url = 'https://maps.googleapis.com/maps/api/geocode/json?latlng=$latitude,$longitude&key=$apiKey';
 
   final response = await http.get(Uri.parse(url));
 
@@ -42,10 +42,8 @@ class GeocodingApi {
       }
     }
 
-    print('⚠️ Could not extract city or state');
     throw Exception('Cannot extract city and state from results');
   } else {
-    print('❌ Failed response: ${response.body}');
     throw Exception('Failed to fetch geocode data: ${response.statusCode} $apiKey');
   }
 }
