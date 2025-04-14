@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:uniroomie/screens/profile_detail_screen.dart';
 import 'package:uniroomie/services/user_profile.dart';
 
 class ProfileSwipeScreen extends StatefulWidget {
@@ -69,33 +70,54 @@ class _ProfileSwipeScreenState extends State<ProfileSwipeScreen> {
                           key: Key(_profiles[_currentIndex].uid),
                           direction: DismissDirection.horizontal,
                           onDismissed: _handleSwipe,
-                          child: _buildProfileCard(_profiles[_currentIndex]),
+                          child: _buildProfileCard(
+                            _profiles[_currentIndex],
+                            () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => ProfileDetailScreen(
+                                      profile: _profiles[_currentIndex]),
+                                ),
+                              );
+                            },
+                          ),
                         ),
                       ],
                     ),
     );
   }
 
-  Widget _buildProfileCard(UserProfile profile) {
+  Widget _buildProfileCard(UserProfile profile, VoidCallback onTap) {
     return Center(
-      child: Card(
-        elevation: 8,
-        margin: const EdgeInsets.all(20),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                "${profile.firstName} ${profile.lastName}",
-                style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 10),
-              Text(profile.university, style: const TextStyle(fontSize: 16)),
-              const SizedBox(height: 10),
-              Text(profile.major, style: const TextStyle(fontSize: 16)),
-            ],
+      child: GestureDetector(
+        onTap: onTap,
+        child: Card(
+          elevation: 8,
+          margin: const EdgeInsets.all(20),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  "${profile.firstName} ${profile.lastName}",
+                  style: const TextStyle(
+                      fontSize: 22, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 10),
+                Text(profile.university, style: const TextStyle(fontSize: 16)),
+                const SizedBox(height: 10),
+                Text(profile.major, style: const TextStyle(fontSize: 16)),
+                const SizedBox(height: 10),
+                TextButton(
+                  onPressed: onTap,
+                  child: const Text("View Profile"),
+                ),
+              ],
+            ),
           ),
         ),
       ),
