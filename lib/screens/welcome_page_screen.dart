@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:uniroomie/screens/profile_listing_screen.dart';
 import 'package:uniroomie/screens/swipe_screen.dart';
 
 class WelcomePageScreen extends StatefulWidget {
@@ -51,16 +50,6 @@ class _WelcomePageScreenState extends State<WelcomePageScreen> {
             Text(
               "Welcome, $firstName $lastName",
               style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const ProfileListingScreen()),
-                );
-              },
-              child: const Text("View Profiles"),
             ),
             const SizedBox(height: 10),
             ElevatedButton(
