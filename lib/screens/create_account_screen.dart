@@ -4,6 +4,7 @@ import 'package:uniroomie/screens/login_screen.dart';
 import 'package:uniroomie/screens/user_decoration_screen.dart';
 import 'package:uniroomie/services/auth_service.dart';
 import 'package:uniroomie/services/geocoding_api.dart';
+import 'dart:developer' as developer;
 
 class CreateAccountScreen extends StatefulWidget {
   const CreateAccountScreen({super.key});
@@ -37,7 +38,7 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
     // Check if location services are enabled
     serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
-      print('Location services are disabled.'); // For debugging
+      developer.log('Location services are disabled.', name: 'CreateAccountScreen');
       return;
     }
 
@@ -46,19 +47,19 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
       if (permission == LocationPermission.denied) {
-        print('Location permissions are denied'); // For debugging
+        developer.log('Location permissions are denied', name: 'CreateAccountScreen');
         return;
       }
     }
 
     if (permission == LocationPermission.deniedForever) {
-      print('Location permissions are permanently denied.'); // For debugging
+      developer.log('Location permissions are permanently denied.', name: 'CreateAccountScreen');
       return;
     }
 
     // Get the current location
     position = await Geolocator.getCurrentPosition();
-    print('Location: ${position?.latitude}, ${position?.longitude}');
+    developer.log('Location: ${position?.latitude}, ${position?.longitude}', name: 'CreateAccountScreen');
     setState(() {}); // Rebuild UI if needed
   }
 

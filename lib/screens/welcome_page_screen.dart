@@ -43,13 +43,14 @@ class _WelcomePageScreenState extends State<WelcomePageScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.orange[800],
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
               "Welcome, $firstName $lastName",
-              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
             ),
             const SizedBox(height: 10),
             ElevatedButton(
@@ -59,7 +60,10 @@ class _WelcomePageScreenState extends State<WelcomePageScreen> {
                   MaterialPageRoute(builder: (context) => const ProfileSwipeScreen()),
                 );
               },
-              child: const Text("Swipe Profiles"),
+              child: const Text(
+                "Swipe Profiles",
+                style: TextStyle(color: Colors.blue),
+              ),
             ),
           ],
         ),

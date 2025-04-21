@@ -36,6 +36,7 @@ class _ProfileSwipeScreenState extends State<ProfileSwipeScreen> {
         _isLoading = false;
         _errorOccurred = true;
       });
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Error loading profiles: $e")),
       );
@@ -57,7 +58,18 @@ class _ProfileSwipeScreenState extends State<ProfileSwipeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Swipe Profiles")),
+      backgroundColor: Colors.orange[800],
+      appBar: AppBar(
+        backgroundColor: Colors.orange[800],
+        elevation: 0,
+        title: const Text("Swipe Profiles",
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 28,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _errorOccurred
