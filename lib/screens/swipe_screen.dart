@@ -107,9 +107,12 @@ class _ProfileSwipeScreenState extends State<ProfileSwipeScreen> {
         child: Card(
           elevation: 8,
           margin: const EdgeInsets.all(20),
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-          child: Padding(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
+            side: const BorderSide(color: Colors.black, width: 2),
+          ),
+          child: Container(
+            width: MediaQuery.of(context).size.width * 0.9,
             padding: const EdgeInsets.all(20),
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -117,16 +120,44 @@ class _ProfileSwipeScreenState extends State<ProfileSwipeScreen> {
                 Text(
                   "${profile.firstName} ${profile.lastName}",
                   style: const TextStyle(
-                      fontSize: 22, fontWeight: FontWeight.bold),
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 15),
+                Text(
+                  profile.university,
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: Colors.grey[700],
+                  ),
                 ),
                 const SizedBox(height: 10),
-                Text(profile.university, style: const TextStyle(fontSize: 16)),
-                const SizedBox(height: 10),
-                Text(profile.major, style: const TextStyle(fontSize: 16)),
-                const SizedBox(height: 10),
-                TextButton(
+                Text(
+                  profile.major,
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: Colors.grey[700],
+                  ),
+                ),
+                const SizedBox(height: 20),
+                ElevatedButton(
                   onPressed: onTap,
-                  child: const Text("View Profile"),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue,
+                    padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 12),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(25),
+                    ),
+                  ),
+                  child: const Text(
+                    "View Profile",
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
                 ),
               ],
             ),
