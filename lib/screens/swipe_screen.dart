@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:uniroomie/services/user_profile.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ProfileSwipeScreen extends StatefulWidget {
   const ProfileSwipeScreen({super.key});
@@ -41,7 +43,62 @@ class _ProfileSwipeScreenState extends State<ProfileSwipeScreen> {
     }
   }
 
-  void _handleSwipe(DismissDirection direction) {
+  Future<void> saveSwipe(String targetUserId, bool liked) async {
+    final currentUser = FirebaseAuth.instance.currentUser;
+    if (currentUser == null) return;
+
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(currentUser.uid)
+        .collection('swipes')
+        .doc(targetUserId)
+        .set({'liked': liked});
+  }
+
+  Future<void> checkForMatch(String targetUserId) async {
+    final currentUser = FirebaseAuth.instance.currentUser;
+    if (currentUser == null) return;
+
+    final doc = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(targetUserId)
+        .collection('swipes')
+        .doc(currentUser.uid)
+        .get();
+
+    if (doc.exists && doc.data()?['liked'] == true) {
+      await FirebaseFirestore.instance.collection('matches').add({
+        'user1': currentUser.uid,
+        'user2': targetUserId,
+        'timestamp': FieldValue.serverTimestamp(),
+      });
+
+      showDialog(
+        context: context,
+        builder: (_) => AlertDialog(
+          title: const Text("🎉 It's a Match!"),
+          content: const Text("You both liked each other."),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text("Cool"),
+            ),
+          ],
+        ),
+      );
+    }
+  }
+
+  void _handleSwipe(DismissDirection direction) async {
+    final swipedUser = _profiles[_currentIndex];
+    final liked = direction == DismissDirection.endToStart ? false : true;
+
+    await saveSwipe(swipedUser.uid, liked);
+
+    if (liked) {
+      await checkForMatch(swipedUser.uid);
+    }
+
     if (_currentIndex < _profiles.length - 1) {
       setState(() {
         _currentIndex++;
