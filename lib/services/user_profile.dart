@@ -33,6 +33,7 @@ class UserProfile {
     required this.latitude,
     required this.longitude,
   });
+
   factory UserProfile.fromDocument(String id, Map<String, dynamic> doc) {
     return UserProfile(
       uid: id,
@@ -93,7 +94,7 @@ class UserProfileService {
           doc.id, doc.data() as Map<String, dynamic>);
     }).toList();
 
-    // We want to seperate the current profile and other profiles to seperate them in the UI
+    // We want to separate the current profile and other profiles to separate them in the UI
     UserProfile? currentUserProfile;
     List<UserProfile> otherProfiles = [];
 
@@ -129,5 +130,20 @@ class UserProfileService {
       "currentUserProfile": currentUserProfile,
       "otherProfiles": filteredProfiles,
     };
+  }
+
+// Added the swipeUser() method
+  Future<void> swipeUser(String swipedUserId) async {
+    final currentUserId = _auth.currentUser?.uid;
+    if (currentUserId == null) {
+      throw Exception('User not authenticated');
+    }
+
+    await _firestore
+        .collection('swipes')
+        .doc(currentUserId)
+        .collection('right')
+        .doc(swipedUserId)
+        .set({'timestamp': FieldValue.serverTimestamp()});
   }
 }
