@@ -110,27 +110,29 @@ class _ProfileSwipeScreenState extends State<ProfileSwipeScreen> {
               ? const Center(child: Text("Error loading profiles."))
               : _profiles.isEmpty
                   ? const Center(child: Text("No profiles available."))
-                  : Stack(
-                      children: [
-                        Dismissible(
-                          key: Key(_profiles[_currentIndex].uid),
-                          direction: DismissDirection.horizontal,
-                          onDismissed: _handleSwipe,
-                          child: _buildProfileCard(
-                            _profiles[_currentIndex],
-                            () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => ProfileDetailScreen(
-                                      profile: _profiles[_currentIndex]),
-                                ),
-                              );
-                            },
-                          ),
+                  : (_currentIndex >= _profiles.length)
+                      ? const Center(child: Text("No more profiles!"))
+                      : Stack(
+                          children: [
+                            Dismissible(
+                              key: Key(_profiles[_currentIndex].uid),
+                              direction: DismissDirection.horizontal,
+                              onDismissed: _handleSwipe,
+                              child: _buildProfileCard(
+                                _profiles[_currentIndex],
+                                () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          ProfileDetailScreen(profile: _profiles[_currentIndex]),
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
     );
   }
 
