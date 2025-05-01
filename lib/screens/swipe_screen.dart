@@ -11,17 +11,35 @@ class ProfileSwipeScreen extends StatefulWidget {
   State<ProfileSwipeScreen> createState() => _ProfileSwipeScreenState();
 }
 
-class _ProfileSwipeScreenState extends State<ProfileSwipeScreen> {
+class _ProfileSwipeScreenState extends State<ProfileSwipeScreen>
+    with SingleTickerProviderStateMixin {
   final UserProfileService _userProfileService = UserProfileService();
   List<UserProfile> _profiles = [];
   int _currentIndex = 0;
   bool _isLoading = true;
   bool _errorOccurred = false;
 
+  late AnimationController _animationController;
+  late Animation<double> _scaleAnimation;
+
   @override
   void initState() {
     super.initState();
     _fetchProfiles();
+
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 500),
+    );
+
+    _scaleAnimation =
+        CurvedAnimation(parent: _animationController, curve: Curves.elasticOut);
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
   }
 
   Future<void> _fetchProfiles() async {
@@ -52,13 +70,6 @@ class _ProfileSwipeScreenState extends State<ProfileSwipeScreen> {
     final targetUserId = swipedProfile.uid;
 
     if (direction == DismissDirection.startToEnd) {
-      final swipeBackDoc = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(targetUserId)
-          .collection('swipes')
-          .doc(currentUserId)
-          .get();
-
       await FirebaseFirestore.instance
           .collection('users')
           .doc(currentUserId)
@@ -66,27 +77,24 @@ class _ProfileSwipeScreenState extends State<ProfileSwipeScreen> {
           .doc(targetUserId)
           .set({'liked': true});
 
-      if (swipeBackDoc.exists && swipeBackDoc.data()?['liked'] == true) {
-        await FirebaseFirestore.instance.collection('matches').add({
-          'user1': currentUserId,
-          'user2': targetUserId,
-          'timestamp': FieldValue.serverTimestamp(),
-        });
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(targetUserId)
+          .collection('swipes')
+          .doc(currentUserId)
+          .set({'liked': true});
 
-        showDialog(
-          context: context,
-          builder: (_) => AlertDialog(
-            title: const Text("It's a Match!"),
-            content: Text("You and ${swipedProfile.firstName} liked each other!"),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text("Nice!"),
-              )
-            ],
-          ),
-        );
-      }
+      await FirebaseFirestore.instance.collection('matches').add({
+        'user1': currentUserId,
+        'user2': targetUserId,
+        'timestamp': FieldValue.serverTimestamp(),
+      });
+
+      _showMatchDialog(swipedProfile.firstName);
+    } else if (direction == DismissDirection.endToStart) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("You skipped ${swipedProfile.firstName}")),
+      );
     }
 
     setState(() {
@@ -98,6 +106,52 @@ class _ProfileSwipeScreenState extends State<ProfileSwipeScreen> {
         const SnackBar(content: Text("No more profiles!")),
       );
     }
+  }
+
+  void _showMatchDialog(String name) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => Center(
+        child: ScaleTransition(
+          scale: _scaleAnimation,
+          child: Container(
+            padding: const EdgeInsets.all(30),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: [BoxShadow(blurRadius: 10, color: Colors.black26)],
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(Icons.favorite, color: Colors.red, size: 80),
+                const SizedBox(height: 10),
+                Text(
+                  "It's a Match!",
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.pink[600],
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Text("You and $name liked each other!"),
+                const SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: const Text("Yay!"),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+
+    _animationController.forward(from: 0);
   }
 
   @override
@@ -124,8 +178,8 @@ class _ProfileSwipeScreenState extends State<ProfileSwipeScreen> {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) =>
-                                          ProfileDetailScreen(profile: _profiles[_currentIndex]),
+                                      builder: (context) => ProfileDetailScreen(
+                                          profile: _profiles[_currentIndex]),
                                     ),
                                   );
                                 },
