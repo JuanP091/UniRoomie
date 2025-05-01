@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:uniroomie/screens/profile_detail_screen.dart';
 import 'package:uniroomie/services/user_profile.dart';
 
@@ -43,14 +45,55 @@ class _ProfileSwipeScreenState extends State<ProfileSwipeScreen> {
   }
 
   void _handleSwipe(DismissDirection direction) async {
-    if (_currentIndex < _profiles.length - 1) {
-      String swipedUserId = _profiles[_currentIndex].uid;
-      await _userProfileService.swipeUser(swipedUserId);
+    if (_currentIndex >= _profiles.length) return;
 
-      setState(() {
-        _currentIndex++;
-      });
-    } else {
+    final currentUserId = FirebaseAuth.instance.currentUser?.uid;
+    final swipedProfile = _profiles[_currentIndex];
+    final targetUserId = swipedProfile.uid;
+
+    if (direction == DismissDirection.startToEnd) {
+      final swipeBackDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(targetUserId)
+          .collection('swipes')
+          .doc(currentUserId)
+          .get();
+
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(currentUserId)
+          .collection('swipes')
+          .doc(targetUserId)
+          .set({'liked': true});
+
+      if (swipeBackDoc.exists && swipeBackDoc.data()?['liked'] == true) {
+        await FirebaseFirestore.instance.collection('matches').add({
+          'user1': currentUserId,
+          'user2': targetUserId,
+          'timestamp': FieldValue.serverTimestamp(),
+        });
+
+        showDialog(
+          context: context,
+          builder: (_) => AlertDialog(
+            title: const Text("It's a Match!"),
+            content: Text("You and ${swipedProfile.firstName} liked each other!"),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text("Nice!"),
+              )
+            ],
+          ),
+        );
+      }
+    }
+
+    setState(() {
+      _currentIndex++;
+    });
+
+    if (_currentIndex >= _profiles.length) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("No more profiles!")),
       );
@@ -98,8 +141,7 @@ class _ProfileSwipeScreenState extends State<ProfileSwipeScreen> {
         child: Card(
           elevation: 8,
           margin: const EdgeInsets.all(20),
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
           child: Padding(
             padding: const EdgeInsets.all(20),
             child: Column(
@@ -107,8 +149,7 @@ class _ProfileSwipeScreenState extends State<ProfileSwipeScreen> {
               children: [
                 Text(
                   "${profile.firstName} ${profile.lastName}",
-                  style: const TextStyle(
-                      fontSize: 22, fontWeight: FontWeight.bold),
+                  style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 10),
                 Text(profile.university, style: const TextStyle(fontSize: 16)),
