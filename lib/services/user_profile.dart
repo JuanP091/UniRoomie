@@ -57,14 +57,18 @@ class UserProfileService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  double distanceDifference(double lat1, double lon1, double lat2, double lon2) {
-    const double R = 6371; // Radius of Earth in km
+  double distanceDifference(
+      double lat1, double lon1, double lat2, double lon2) {
+    const double R = 6371;
+
     double dLat = _degToRad(lat2 - lat1);
     double dLon = _degToRad(lon2 - lon1);
 
     double a = sin(dLat / 2) * sin(dLat / 2) +
-        cos(_degToRad(lat1)) * cos(_degToRad(lat2)) *
-        sin(dLon / 2) * sin(dLon / 2);
+        cos(_degToRad(lat1)) *
+            cos(_degToRad(lat2)) *
+            sin(dLon / 2) *
+            sin(dLon / 2);
 
     double c = 2 * atan2(sqrt(a), sqrt(1 - a));
     return R * c;
@@ -72,6 +76,15 @@ class UserProfileService {
 
   double _degToRad(double deg) {
     return deg * (pi / 180);
+  }
+
+  bool isSimilar(String str1, String str2) {
+    return str1.toLowerCase().contains(str2.toLowerCase()) ||
+        str2.toLowerCase().contains(str1.toLowerCase());
+  }
+
+  bool isSameUniversity(String university1, String university2) {
+    return university1.toLowerCase() == university2.toLowerCase();
   }
 
   Future<Map<String, dynamic>> fetchProfiles() async {
@@ -83,7 +96,8 @@ class UserProfileService {
     QuerySnapshot userDocs = await _firestore.collection('users').get();
 
     List<UserProfile> allProfiles = userDocs.docs.map((doc) {
-      return UserProfile.fromDocument(doc.id, doc.data() as Map<String, dynamic>);
+      return UserProfile.fromDocument(
+          doc.id, doc.data() as Map<String, dynamic>);
     }).toList();
 
     UserProfile? currentUserProfile;
@@ -101,47 +115,32 @@ class UserProfileService {
       throw Exception("Current user profile not found in Firestore.");
     }
 
-    List<Map<String, dynamic>> scoredProfiles = [];
+    List<UserProfile> filteredProfiles = [];
 
     for (var profile in otherProfiles) {
-      double distance = distanceDifference(
-        currentUserProfile.latitude,
-        currentUserProfile.longitude,
-        profile.latitude,
-        profile.longitude,
-      );
+      if (distanceDifference(
+              currentUserProfile.latitude,
+              currentUserProfile.longitude,
+              profile.latitude,
+              profile.longitude) <=
+          30) {
 
-      if (distance <= 30) {
-        int sharedHobbies = _countSharedHobbies(
-          currentUserProfile.hobbies,
-          profile.hobbies,
-        );
+        if (isSimilar(currentUserProfile.major, profile.major)) {
 
-        if (sharedHobbies > 0) {
-          scoredProfiles.add({
-            'profile': profile,
-            'sharedHobbies': sharedHobbies,
-          });
+          if (isSameUniversity(currentUserProfile.university, profile.university)) {
+
+            if (isSimilar(currentUserProfile.sleepSchedule, profile.sleepSchedule)) {
+              filteredProfiles.add(profile);
+            }
+          }
         }
       }
     }
-
-    scoredProfiles.sort((a, b) => b['sharedHobbies'].compareTo(a['sharedHobbies']));
-
-    List<UserProfile> filteredProfiles = scoredProfiles
-        .map((entry) => entry['profile'] as UserProfile)
-        .toList();
 
     return {
       "currentUserProfile": currentUserProfile,
       "otherProfiles": filteredProfiles,
     };
-  }
-
-  int _countSharedHobbies(List<String> list1, List<String> list2) {
-    final set1 = list1.map((e) => e.toLowerCase().trim()).toSet();
-    final set2 = list2.map((e) => e.toLowerCase().trim()).toSet();
-    return set1.intersection(set2).length;
   }
 
   Future<void> swipeUser(String swipedUserId) async {
