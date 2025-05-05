@@ -33,6 +33,7 @@ class UserProfile {
     required this.latitude,
     required this.longitude,
   });
+
   factory UserProfile.fromDocument(String id, Map<String, dynamic> doc) {
     return UserProfile(
       uid: id,
@@ -56,10 +57,9 @@ class UserProfileService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  // Calculate difference in distance in miles using haversine formula
   double distanceDifference(
       double lat1, double lon1, double lat2, double lon2) {
-    const double R = 6371; // Earth's radius in kilometers
+    const double R = 6371;
 
     double dLat = _degToRad(lat2 - lat1);
     double dLon = _degToRad(lon2 - lon1);
@@ -71,14 +71,22 @@ class UserProfileService {
             sin(dLon / 2);
 
     double c = 2 * atan2(sqrt(a), sqrt(1 - a));
-    return R * c; // Distance in km
+    return R * c;
   }
 
   double _degToRad(double deg) {
     return deg * (pi / 180);
   }
 
-  // Used to fetch profiles from database
+  bool isSimilar(String str1, String str2) {
+    return str1.toLowerCase().contains(str2.toLowerCase()) ||
+        str2.toLowerCase().contains(str1.toLowerCase());
+  }
+
+  bool isSameUniversity(String university1, String university2) {
+    return university1.toLowerCase() == university2.toLowerCase();
+  }
+
   Future<Map<String, dynamic>> fetchProfiles() async {
     String? currentUserId = _auth.currentUser?.uid;
     if (currentUserId == null) {
@@ -87,17 +95,14 @@ class UserProfileService {
 
     QuerySnapshot userDocs = await _firestore.collection('users').get();
 
-    // Put all Profiles in a List
     List<UserProfile> allProfiles = userDocs.docs.map((doc) {
       return UserProfile.fromDocument(
           doc.id, doc.data() as Map<String, dynamic>);
     }).toList();
 
-    // We want to seperate the current profile and other profiles to seperate them in the UI
     UserProfile? currentUserProfile;
     List<UserProfile> otherProfiles = [];
 
-    // Look for current profile
     for (var profile in allProfiles) {
       if (profile.uid == currentUserId) {
         currentUserProfile = profile;
@@ -110,18 +115,25 @@ class UserProfileService {
       throw Exception("Current user profile not found in Firestore.");
     }
 
-    // Will use this to filter out profiles that are too far from current user
     List<UserProfile> filteredProfiles = [];
 
     for (var profile in otherProfiles) {
-      // Check distance
       if (distanceDifference(
               currentUserProfile.latitude,
               currentUserProfile.longitude,
               profile.latitude,
               profile.longitude) <=
           30) {
-        filteredProfiles.add(profile);
+
+        if (isSimilar(currentUserProfile.major, profile.major)) {
+
+          if (isSameUniversity(currentUserProfile.university, profile.university)) {
+
+            if (isSimilar(currentUserProfile.sleepSchedule, profile.sleepSchedule)) {
+              filteredProfiles.add(profile);
+            }
+          }
+        }
       }
     }
 
@@ -129,5 +141,19 @@ class UserProfileService {
       "currentUserProfile": currentUserProfile,
       "otherProfiles": filteredProfiles,
     };
+  }
+
+  Future<void> swipeUser(String swipedUserId) async {
+    final currentUserId = _auth.currentUser?.uid;
+    if (currentUserId == null) {
+      throw Exception('User not authenticated');
+    }
+
+    await _firestore
+        .collection('swipes')
+        .doc(currentUserId)
+        .collection('right')
+        .doc(swipedUserId)
+        .set({'timestamp': FieldValue.serverTimestamp()});
   }
 }
