@@ -125,13 +125,15 @@ class UserProfileService {
               profile.longitude) <=
           30;
 
+      if (!isClose) continue;
+
       bool sameMajor = isSimilar(currentUserProfile.major, profile.major);
       bool sameUniversity = isSameUniversity(
           currentUserProfile.university, profile.university);
       bool sameSleep = isSimilar(
           currentUserProfile.sleepSchedule, profile.sleepSchedule);
 
-      if (isClose && sameMajor && sameUniversity && sameSleep) {
+      if (sameMajor && sameUniversity && sameSleep) {
         similarProfiles.add(profile);
       } else {
         nonSimilarProfiles.add(profile);
