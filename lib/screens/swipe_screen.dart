@@ -83,7 +83,6 @@ class _ProfileSwipeScreenState extends State<ProfileSwipeScreen>
           .doc(currentUserId)
           .set({'liked': true});
 
-      // Check if the other user also liked back (match)
       DocumentSnapshot targetUserSwipe = await FirebaseFirestore.instance
           .collection('users')
           .doc(targetUserId)
@@ -92,14 +91,14 @@ class _ProfileSwipeScreenState extends State<ProfileSwipeScreen>
           .get();
 
       if (targetUserSwipe.exists && targetUserSwipe['liked'] == true) {
-        // **Add Match to Firestore**
-        DocumentReference matchRef = await FirebaseFirestore.instance.collection('matches').add({
+        DocumentReference matchRef =
+            await FirebaseFirestore.instance.collection('matches').add({
           'userIds': [currentUserId, targetUserId],
           'timestamp': FieldValue.serverTimestamp(),
         });
 
-        String matchId = matchRef.id; // Capture the match document ID
-        print("Match ID created: $matchId"); // For debugging or storing the match ID
+        String matchId = matchRef.id;
+        print("Match ID created: $matchId");
 
         _showMatchDialog(swipedProfile.firstName);
       }
@@ -137,24 +136,42 @@ class _ProfileSwipeScreenState extends State<ProfileSwipeScreen>
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Icon(Icons.favorite, color: Colors.red, size: 80),
-                const SizedBox(height: 10),
-                Text(
-                  "It's a Match!",
+                const Icon(Icons.house, color: Colors.deepOrange, size: 80),
+                const SizedBox(height: 16),
+                const Text(
+                  "Roommate Match!",
                   style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
-                    color: Colors.pink[600],
+                    color: Colors.deepOrange,
+                    decoration: TextDecoration.none,
                   ),
                 ),
-                const SizedBox(height: 10),
-                Text("You and $name liked each other!"),
-                const SizedBox(height: 20),
+                const SizedBox(height: 12),
+                Text(
+                  "You and $name are interested in rooming together!",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Colors.grey[800],
+                    decoration: TextDecoration.none,
+                  ),
+                ),
+                const SizedBox(height: 24),
                 ElevatedButton(
                   onPressed: () {
                     Navigator.pop(context);
                   },
-                  child: const Text("Yay!"),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.deepOrange,
+                  ),
+                  child: const Text(
+                    "Awesome!",
+                    style: TextStyle(
+                      color: Colors.white, 
+                      fontWeight: FontWeight.bold,
+                    ),
+                    ),
                 ),
               ],
             ),
@@ -209,8 +226,8 @@ class _ProfileSwipeScreenState extends State<ProfileSwipeScreen>
         child: Card(
           elevation: 8,
           margin: const EdgeInsets.all(20),
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(15)),
           child: Padding(
             padding: const EdgeInsets.all(20),
             child: Column(
@@ -222,7 +239,8 @@ class _ProfileSwipeScreenState extends State<ProfileSwipeScreen>
                       fontSize: 22, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 10),
-                Text(profile.university, style: const TextStyle(fontSize: 16)),
+                Text(profile.university,
+                    style: const TextStyle(fontSize: 16)),
                 const SizedBox(height: 10),
                 Text(profile.major, style: const TextStyle(fontSize: 16)),
                 const SizedBox(height: 10),
