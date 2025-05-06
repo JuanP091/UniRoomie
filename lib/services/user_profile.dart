@@ -96,8 +96,7 @@ class UserProfileService {
     QuerySnapshot userDocs = await _firestore.collection('users').get();
 
     List<UserProfile> allProfiles = userDocs.docs.map((doc) {
-      return UserProfile.fromDocument(
-          doc.id, doc.data() as Map<String, dynamic>);
+      return UserProfile.fromDocument(doc.id, doc.data() as Map<String, dynamic>);
     }).toList();
 
     UserProfile? currentUserProfile;
@@ -115,31 +114,35 @@ class UserProfileService {
       throw Exception("Current user profile not found in Firestore.");
     }
 
-    List<UserProfile> filteredProfiles = [];
+    List<UserProfile> similarProfiles = [];
+    List<UserProfile> nonSimilarProfiles = [];
 
     for (var profile in otherProfiles) {
-      if (distanceDifference(
+      bool isClose = distanceDifference(
               currentUserProfile.latitude,
               currentUserProfile.longitude,
               profile.latitude,
               profile.longitude) <=
-          30) {
+          30;
 
-        if (isSimilar(currentUserProfile.major, profile.major)) {
+      bool sameMajor = isSimilar(currentUserProfile.major, profile.major);
+      bool sameUniversity = isSameUniversity(
+          currentUserProfile.university, profile.university);
+      bool sameSleep = isSimilar(
+          currentUserProfile.sleepSchedule, profile.sleepSchedule);
 
-          if (isSameUniversity(currentUserProfile.university, profile.university)) {
-
-            if (isSimilar(currentUserProfile.sleepSchedule, profile.sleepSchedule)) {
-              filteredProfiles.add(profile);
-            }
-          }
-        }
+      if (isClose && sameMajor && sameUniversity && sameSleep) {
+        similarProfiles.add(profile);
+      } else {
+        nonSimilarProfiles.add(profile);
       }
     }
 
+    List<UserProfile> combinedProfiles = [...similarProfiles, ...nonSimilarProfiles];
+
     return {
       "currentUserProfile": currentUserProfile,
-      "otherProfiles": filteredProfiles,
+      "otherProfiles": combinedProfiles,
     };
   }
 
