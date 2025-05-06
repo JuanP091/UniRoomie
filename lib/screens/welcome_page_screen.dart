@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:uniroomie/screens/swipe_screen.dart';
+import 'package:uniroomie/screens/matchlist_screen.dart';
 
 class WelcomePageScreen extends StatefulWidget {
   const WelcomePageScreen({super.key});
@@ -52,14 +53,30 @@ class _WelcomePageScreenState extends State<WelcomePageScreen> {
               style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 10),
+
             ElevatedButton(
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const ProfileSwipeScreen()),
+                  MaterialPageRoute(
+                      builder: (context) => const ProfileSwipeScreen()),
                 );
               },
               child: const Text("Swipe Profiles"),
+            ),
+
+            const SizedBox(height: 10),
+
+            // View Matches Button
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const MatchesListScreen()),
+                );
+              },
+              child: const Text("View Matches"),
             ),
           ],
         ),
