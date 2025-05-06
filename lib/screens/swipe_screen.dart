@@ -76,12 +76,6 @@ class _ProfileSwipeScreenState extends State<ProfileSwipeScreen>
           .collection('swipes')
           .doc(targetUserId)
           .set({'liked': true});
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(targetUserId)
-          .collection('swipes')
-          .doc(currentUserId)
-          .set({'liked': true});
 
       DocumentSnapshot targetUserSwipe = await FirebaseFirestore.instance
           .collection('users')
@@ -102,7 +96,18 @@ class _ProfileSwipeScreenState extends State<ProfileSwipeScreen>
 
         _showMatchDialog(swipedProfile.firstName);
       }
+
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text("You've liked ${swipedProfile.firstName}"),
+      ));
     } else if (direction == DismissDirection.endToStart) {
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(currentUserId)
+          .collection('swipes')
+          .doc(targetUserId)
+          .set({'liked': false});
+          
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("You skipped ${swipedProfile.firstName}")),
       );
@@ -168,10 +173,10 @@ class _ProfileSwipeScreenState extends State<ProfileSwipeScreen>
                   child: const Text(
                     "Awesome!",
                     style: TextStyle(
-                      color: Colors.white, 
+                      color: Colors.white,
                       fontWeight: FontWeight.bold,
                     ),
-                    ),
+                  ),
                 ),
               ],
             ),
@@ -226,8 +231,8 @@ class _ProfileSwipeScreenState extends State<ProfileSwipeScreen>
         child: Card(
           elevation: 8,
           margin: const EdgeInsets.all(20),
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(15)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
           child: Padding(
             padding: const EdgeInsets.all(20),
             child: Column(
@@ -239,8 +244,7 @@ class _ProfileSwipeScreenState extends State<ProfileSwipeScreen>
                       fontSize: 22, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 10),
-                Text(profile.university,
-                    style: const TextStyle(fontSize: 16)),
+                Text(profile.university, style: const TextStyle(fontSize: 16)),
                 const SizedBox(height: 10),
                 Text(profile.major, style: const TextStyle(fontSize: 16)),
                 const SizedBox(height: 10),
