@@ -76,7 +76,6 @@ class _ProfileSwipeScreenState extends State<ProfileSwipeScreen>
           .collection('swipes')
           .doc(targetUserId)
           .set({'liked': true});
-
       await FirebaseFirestore.instance
           .collection('users')
           .doc(targetUserId)
@@ -84,13 +83,26 @@ class _ProfileSwipeScreenState extends State<ProfileSwipeScreen>
           .doc(currentUserId)
           .set({'liked': true});
 
-      await FirebaseFirestore.instance.collection('matches').add({
-        'user1': currentUserId,
-        'user2': targetUserId,
-        'timestamp': FieldValue.serverTimestamp(),
-      });
+      // Check if the other user also liked back (match)
+      DocumentSnapshot targetUserSwipe = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(targetUserId)
+          .collection('swipes')
+          .doc(currentUserId)
+          .get();
 
-      _showMatchDialog(swipedProfile.firstName);
+      if (targetUserSwipe.exists && targetUserSwipe['liked'] == true) {
+        // **Add Match to Firestore**
+        DocumentReference matchRef = await FirebaseFirestore.instance.collection('matches').add({
+          'userIds': [currentUserId, targetUserId],
+          'timestamp': FieldValue.serverTimestamp(),
+        });
+
+        String matchId = matchRef.id; // Capture the match document ID
+        print("Match ID created: $matchId"); // For debugging or storing the match ID
+
+        _showMatchDialog(swipedProfile.firstName);
+      }
     } else if (direction == DismissDirection.endToStart) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("You skipped ${swipedProfile.firstName}")),
@@ -197,7 +209,8 @@ class _ProfileSwipeScreenState extends State<ProfileSwipeScreen>
         child: Card(
           elevation: 8,
           margin: const EdgeInsets.all(20),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
           child: Padding(
             padding: const EdgeInsets.all(20),
             child: Column(
@@ -205,7 +218,8 @@ class _ProfileSwipeScreenState extends State<ProfileSwipeScreen>
               children: [
                 Text(
                   "${profile.firstName} ${profile.lastName}",
-                  style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                      fontSize: 22, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 10),
                 Text(profile.university, style: const TextStyle(fontSize: 16)),
