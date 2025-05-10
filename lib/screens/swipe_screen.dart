@@ -67,6 +67,28 @@ class _ProfileSwipeScreenState extends State<ProfileSwipeScreen>
     }
   }
 
+  Future<void> _resetSwipes() async {
+  final currentUserId = FirebaseAuth.instance.currentUser?.uid;
+  if (currentUserId == null) return;
+
+  final swipeCollection = FirebaseFirestore.instance
+      .collection('users')
+      .doc(currentUserId)
+      .collection('swipes');
+
+  final leftSwipesSnapshot = await swipeCollection
+      .where('liked', isEqualTo: false)
+      .get();
+
+  for (var doc in leftSwipesSnapshot.docs) {
+    await doc.reference.delete();
+  }
+
+  ScaffoldMessenger.of(context).showSnackBar(
+    const SnackBar(content: Text("Reloading profiles...")),
+  );
+  await _fetchProfiles();
+}
   void _handleSwipe(DismissDirection direction) async {
     if (_currentIndex >= _profiles.length) return;
 
@@ -209,7 +231,16 @@ class _ProfileSwipeScreenState extends State<ProfileSwipeScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Swipe Profiles")),
+      appBar: AppBar(
+        title: const Text("Swipe Profiles"),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            tooltip: "Reset Swipes",
+            onPressed: _resetSwipes,
+          ),
+        ],
+      ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _errorOccurred
