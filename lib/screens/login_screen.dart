@@ -3,6 +3,8 @@ import 'package:uniroomie/screens/create_account_screen.dart';
 import 'package:uniroomie/screens/recovery_screen.dart';
 import 'package:uniroomie/screens/welcome_page_screen.dart';
 import 'package:uniroomie/services/auth_service.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -39,15 +41,81 @@ class _LoginScreenState extends State<LoginScreen> {
     });
 
     if (response["success"]) {
+      User? user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        print("log in, checking queued notifications");
+        _displayUnreadNotifications(
+            user.uid); //show notifications for unread messages
+      }
+
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => const WelcomePageScreen()),
       );
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(response["message"])),
-      );
+      _showTopNotification("Login Failed: ${response["message"]}");
     }
+  }
+
+  // displays notifications at the top of the screen 
+  Future<void> _displayUnreadNotifications(String userId) async {
+    if (!mounted) {
+      print("Widget is unmounted, skipping notification display.");//used for debuging 
+      return;
+    }
+
+    var notificationsSnapshot = await FirebaseFirestore.instance
+        .collection("notifications")
+        .where("recipientId", isEqualTo: userId)
+        .where("isRead", isEqualTo: false)
+        .get();
+
+    for (var doc in notificationsSnapshot.docs) {
+      var data = doc.data();
+      print("- Displaying notification: ${data["title"]} - ${data["body"]}");//for debuging 
+
+      if (mounted) {
+        // Checks one last time before calling UI-related function
+        _showTopNotification("New message: ${data["body"]}");
+      }
+    }
+  }
+
+  // function to show a top overlay notification, not snackbar
+  void _showTopNotification(String message) {
+    OverlayEntry overlayEntry = OverlayEntry(
+      builder: (context) => Positioned(
+        top: 50, 
+        left: 20,
+        right: 20,
+        child: Material(
+          color: Colors.transparent,
+          child: Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: Colors.blueAccent,
+              borderRadius: BorderRadius.circular(10),
+              boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 4)],
+            ),
+            child: Text(
+              message,
+              style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold),
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ),
+      ),
+    );
+
+    Overlay.of(context).insert(overlayEntry);
+
+    //Remove notification after 6 seconds, flutter overlay would need manual removal otherwise
+    Future.delayed(const Duration(seconds: 6), () {
+      overlayEntry.remove();
+    });
   }
 
   @override
@@ -82,7 +150,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 borderRadius: BorderRadius.circular(30),
                 boxShadow: [
                   BoxShadow(
-                    color: Color.fromRGBO(0, 0, 0, 0.3),
+                    color: const Color.fromRGBO(0, 0, 0, 0.3),
                     spreadRadius: 2,
                     blurRadius: 5,
                     offset: const Offset(0, 3),
@@ -115,7 +183,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 borderRadius: BorderRadius.circular(30),
                 boxShadow: [
                   BoxShadow(
-                    color: Color.fromRGBO(0, 0, 0, 0.3),
+                    color: const Color.fromRGBO(0, 0, 0, 0.3),
                     spreadRadius: 2,
                     blurRadius: 5,
                     offset: const Offset(0, 3),
@@ -152,11 +220,13 @@ class _LoginScreenState extends State<LoginScreen> {
                       builder: (context) => const RecoverAccountScreen()),
                 );
               },
-              child: const Text("Forgot Password?",
-              style: TextStyle(
+              child: const Text(
+                "Forgot Password?",
+                style: TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.w500,
-              )),
+                ),
+              ),
             ),
             const SizedBox(height: 20),
             _isLoading
@@ -168,7 +238,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       borderRadius: BorderRadius.circular(25), // Round edges
                       boxShadow: [
                         BoxShadow(
-                          color: Color.fromRGBO(0, 0, 0, 0.3),
+                          color: const Color.fromRGBO(0, 0, 0, 0.3),
                           spreadRadius: 1,
                           blurRadius: 3,
                           offset: const Offset(0, 2),
@@ -206,7 +276,6 @@ class _LoginScreenState extends State<LoginScreen> {
               child: const Text(
                 "Don't have an account? Sign Up",
                 style: TextStyle(
-                  //decoration: TextDecoration.underline,
                   color: Colors.white,
                   fontWeight: FontWeight.w500,
                 ),
