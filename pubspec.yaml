@@ -24,7 +24,8 @@ dependencies:
 
 
   swipe_cards: ^2.0.0
-
+  firebase_messaging: ^15.2.5
+  
 dev_dependencies:
   flutter_test:
     sdk: flutter
