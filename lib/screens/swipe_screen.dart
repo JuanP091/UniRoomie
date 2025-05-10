@@ -1,6 +1,6 @@
-import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:uniroomie/screens/profile_detail_screen.dart';
 import 'package:uniroomie/services/user_profile.dart';
 
@@ -15,6 +15,8 @@ class _ProfileSwipeScreenState extends State<ProfileSwipeScreen>
     with SingleTickerProviderStateMixin {
   final UserProfileService _userProfileService = UserProfileService();
   List<UserProfile> _profiles = [];
+  List<UserProfile> _leftSwipedProfiles = [];
+  bool _reloadedLeftProfiles = false;
   int _currentIndex = 0;
   bool _isLoading = true;
   bool _errorOccurred = false;
@@ -48,8 +50,11 @@ class _ProfileSwipeScreenState extends State<ProfileSwipeScreen>
 
       setState(() {
         _profiles = profiles["otherProfiles"];
+        _leftSwipedProfiles = profiles["leftSwipedProfiles"] ?? [];
         _isLoading = false;
         _errorOccurred = false;
+        _currentIndex = 0;
+        _reloadedLeftProfiles = false;
       });
     } catch (e) {
       setState(() {
@@ -107,7 +112,7 @@ class _ProfileSwipeScreenState extends State<ProfileSwipeScreen>
           .collection('swipes')
           .doc(targetUserId)
           .set({'liked': false});
-          
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("You skipped ${swipedProfile.firstName}")),
       );
@@ -118,9 +123,22 @@ class _ProfileSwipeScreenState extends State<ProfileSwipeScreen>
     });
 
     if (_currentIndex >= _profiles.length) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("No more profiles!")),
-      );
+      if (_leftSwipedProfiles.isNotEmpty && !_reloadedLeftProfiles) {
+        setState(() {
+          _profiles = _leftSwipedProfiles;
+          _currentIndex = 0;
+          _reloadedLeftProfiles = true;
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+              content: Text("No more new profiles. Showing skipped profiles.")),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("No more profiles!")),
+        );
+      }
     }
   }
 

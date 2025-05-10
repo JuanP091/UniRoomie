@@ -93,6 +93,30 @@ class UserProfileService {
       throw Exception("Could not retrieve current user.");
     }
 
+    // Get Right Swiped Profiles of current users
+    QuerySnapshot rightSwipeSnapshot = await _firestore
+      .collection('users')
+      .doc(currentUserId)
+      .collection('swipes')
+      .where('liked', isEqualTo: true)
+      .get();
+
+      // Store in right swiped set
+      Set<String> rightSwipedUserIds = 
+        rightSwipeSnapshot.docs.map((doc) => doc.id).toSet();
+
+    // Get left Swiped Profiles of current users
+    QuerySnapshot leftSwipeSnapshot = await _firestore
+      .collection('users')
+      .doc(currentUserId)
+      .collection('swipes')
+      .where('liked', isEqualTo: false)
+      .get();
+
+      // Store in left swiped set 
+      Set<String> leftSwipedUserIds = 
+        leftSwipeSnapshot.docs.map((doc) => doc.id).toSet();
+
     QuerySnapshot userDocs = await _firestore.collection('users').get();
 
     List<UserProfile> allProfiles = userDocs.docs.map((doc) {
@@ -105,7 +129,7 @@ class UserProfileService {
     for (var profile in allProfiles) {
       if (profile.uid == currentUserId) {
         currentUserProfile = profile;
-      } else {
+      } else if(!rightSwipedUserIds.contains(profile.uid)){
         otherProfiles.add(profile);
       }
     }
@@ -116,6 +140,13 @@ class UserProfileService {
 
     List<UserProfile> similarProfiles = [];
     List<UserProfile> nonSimilarProfiles = [];
+    List<UserProfile> leftSwipedUsers = [];
+
+    for (var profile in allProfiles) {
+      if (leftSwipedUserIds.contains(profile.uid)) {
+        leftSwipedUsers.add(profile);
+      }
+    }
 
     for (var profile in otherProfiles) {
       bool isClose = distanceDifference(
@@ -145,6 +176,7 @@ class UserProfileService {
     return {
       "currentUserProfile": currentUserProfile,
       "otherProfiles": combinedProfiles,
+      "leftSwipedProfiles": leftSwipedUsers,
     };
   }
 
