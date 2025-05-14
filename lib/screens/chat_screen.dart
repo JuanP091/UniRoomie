@@ -4,6 +4,8 @@ import 'package:uniroomie/services/messages_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:intl/intl.dart'; 
+import 'package:uniroomie/screens/profile_detail_screen.dart';
+import 'package:uniroomie/services/user_profile.dart';
 
 class ChatScreen extends StatefulWidget {
   final String matchId;
@@ -121,6 +123,46 @@ class _ChatScreenState extends State<ChatScreen> {
             fontWeight: FontWeight.bold,
           ),
         ),
+        actions: [
+          TextButton.icon(
+            onPressed: () async {
+              User? currentUser = _auth.currentUser;
+              if (currentUser == null) return;
+
+              var matchDoc = await _firestore.collection("matches").doc(widget.matchId).get();
+              if (!matchDoc.exists) return;
+
+              var matchData = matchDoc.data() as Map<String, dynamic>;
+              List<dynamic> userIds = matchData["userIds"] ?? [];
+              String chatPartnerId = userIds.firstWhere((id) => id != currentUser.uid, orElse: () => "");
+
+              if (chatPartnerId.isNotEmpty) {
+                var userDoc = await _firestore.collection("users").doc(chatPartnerId).get();
+                if (userDoc.exists) {
+                  var userData = userDoc.data() as Map<String, dynamic>;
+                  if (!mounted) return;
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ProfileDetailScreen(
+                        profile: UserProfile.fromDocument(chatPartnerId, userData),
+                      ),
+                    ),
+                  );
+                }
+              }
+            },
+            icon: const Icon(Icons.person, color: Colors.white),
+            label: const Text(
+              "View Profile",
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ],
       ),
       body: Column(
         children: [
