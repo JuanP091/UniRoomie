@@ -44,9 +44,9 @@ class _LoginScreenState extends State<LoginScreen> {
     if (response["success"]) {
       User? user = FirebaseAuth.instance.currentUser;
       if (user != null) {
-        print("🔍 User logged in, checking queued notifications...");
+        print(" User logged in, checking queued notifications...");
         _displayUnreadNotifications(
-            user.uid); // ✅ Display notifications only for unread messages
+            user.uid); // Display notifications only for unread messages
       }
 
       Navigator.pushReplacement(
@@ -58,10 +58,10 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  // ✅ Function to display only unread notifications at the top of the screen
+  // Function to display only unread notifications at the top of the screen
   Future<void> _displayUnreadNotifications(String userId) async {
     if (!mounted) {
-      print("🚨 Widget is unmounted, skipping notification display.");
+      print("Widget is unmounted, skipping notification display.");
       return;
     }
 
@@ -73,20 +73,20 @@ class _LoginScreenState extends State<LoginScreen> {
 
     for (var doc in notificationsSnapshot.docs) {
       var data = doc.data();
-      print("📩 Displaying notification: ${data["title"]} - ${data["body"]}");
+      print("Displaying notification: ${data["title"]} - ${data["body"]}");
 
       if (mounted) {
-        // ✅ Check again before calling UI-related function
+        // Check again before calling UI-related function
         _showTopNotification("New message: ${data["body"]}");
       }
     }
   }
 
-  // ✅ Function to show a top overlay notification
+  // Function to show a top overlay notification
   void _showTopNotification(String message) {
     OverlayEntry overlayEntry = OverlayEntry(
       builder: (context) => Positioned(
-        top: 50, // ✅ Display at the top
+        top: 50, // Display at the top
         left: 20,
         right: 20,
         child: Material(
@@ -113,7 +113,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
     Overlay.of(context).insert(overlayEntry);
 
-    // ✅ Remove notification after 10 seconds
+    // Remove notification after 10 seconds
     Future.delayed(const Duration(seconds: 10), () {
       overlayEntry.remove();
     });

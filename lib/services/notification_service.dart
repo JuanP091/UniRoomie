@@ -35,11 +35,11 @@ class NotificationService {
   void startListeningForAuthChanges() {
     FirebaseAuth.instance.authStateChanges().listen((User? user) {
       if (user == null) {
-        print("🚨 No user logged in, skipping notification check.");
+        print("No user logged in, skipping notification check.");
         return;
       }
 
-      print("🔍 User logged in: ${user.uid}, checking notifications...");
+      print("User logged in: ${user.uid}, checking notifications...");
       checkQueuedNotifications(user);
     });
   }
@@ -52,21 +52,21 @@ class NotificationService {
         .get();
 
     if (notificationsSnapshot.docs.isEmpty) {
-      print("✅ No unread notifications found.");
+      print("No unread notifications found.");
       return;
     }
 
     for (var doc in notificationsSnapshot.docs) {
       var data = doc.data();
       print(
-          "📩 Sending queued notification: ${data["title"]} - ${data["body"]}");
+          " Sending queued notification: ${data["title"]} - ${data["body"]}");
 
       String? recipientToken = await _firebaseMessaging.getToken();
       if (recipientToken != null) {
         await sendPushNotification(recipientToken, data["title"], data["body"]);
-        print("✅ Notification sent successfully!");
+        print("Notification sent successfully!");
       } else {
-        print("🚨 Failed to get FCM token for user.");
+        print("Failed to get FCM token for user.");
       }
     }
   }
