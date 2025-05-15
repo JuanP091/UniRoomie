@@ -87,98 +87,104 @@ class UserProfileService {
     return university1.toLowerCase() == university2.toLowerCase();
   }
 
-  Future<Map<String, dynamic>> fetchProfiles() async {
-    String? currentUserId = _auth.currentUser?.uid;
-    if (currentUserId == null) {
-      throw Exception("Could not retrieve current user.");
-    }
+Future<Map<String, dynamic>> fetchProfiles() async {
+  String? currentUserId = _auth.currentUser?.uid;
+  if (currentUserId == null) {
+    throw Exception("Could not retrieve current user.");
+  }
 
-    // Get Right Swiped Profiles of current users
-    QuerySnapshot rightSwipeSnapshot = await _firestore
+  // Get right swiped profiles 
+  QuerySnapshot rightSwipeSnapshot = await _firestore
       .collection('users')
       .doc(currentUserId)
       .collection('swipes')
       .where('liked', isEqualTo: true)
       .get();
 
-      // Store in right swiped set
-      Set<String> rightSwipedUserIds = 
-        rightSwipeSnapshot.docs.map((doc) => doc.id).toSet();
+  Set<String> rightSwipedUserIds =
+      rightSwipeSnapshot.docs.map((doc) => doc.id).toSet();
 
-    // Get left Swiped Profiles of current users
-    QuerySnapshot leftSwipeSnapshot = await _firestore
+  // Get left swiped profiles
+  QuerySnapshot leftSwipeSnapshot = await _firestore
       .collection('users')
       .doc(currentUserId)
       .collection('swipes')
       .where('liked', isEqualTo: false)
       .get();
 
-      // Store in left swiped set 
-      Set<String> leftSwipedUserIds = 
-        leftSwipeSnapshot.docs.map((doc) => doc.id).toSet();
+  Set<String> leftSwipedUserIds =
+      leftSwipeSnapshot.docs.map((doc) => doc.id).toSet();
 
-    QuerySnapshot userDocs = await _firestore.collection('users').get();
+  // Fetch all user profiles
+  QuerySnapshot userDocs = await _firestore.collection('users').get();
 
-    List<UserProfile> allProfiles = userDocs.docs.map((doc) {
-      return UserProfile.fromDocument(doc.id, doc.data() as Map<String, dynamic>);
-    }).toList();
+  List<UserProfile> allProfiles = userDocs.docs.map((doc) {
+    return UserProfile.fromDocument(doc.id, doc.data() as Map<String, dynamic>);
+  }).toList();
 
-    UserProfile? currentUserProfile;
-    List<UserProfile> otherProfiles = [];
+  UserProfile? currentUserProfile;
+  List<UserProfile> otherProfiles = [];
 
-    for (var profile in allProfiles) {
-      if (profile.uid == currentUserId) {
-        currentUserProfile = profile;
-      } else if(!rightSwipedUserIds.contains(profile.uid)){
-        otherProfiles.add(profile);
-      }
+  for (var profile in allProfiles) {
+    if (profile.uid == currentUserId) {
+      currentUserProfile = profile;
+    } else if (!rightSwipedUserIds.contains(profile.uid)) {
+      otherProfiles.add(profile);
     }
-
-    if (currentUserProfile == null) {
-      throw Exception("Current user profile not found in Firestore.");
-    }
-
-    List<UserProfile> similarProfiles = [];
-    List<UserProfile> nonSimilarProfiles = [];
-    List<UserProfile> leftSwipedUsers = [];
-
-    for (var profile in allProfiles) {
-      if (leftSwipedUserIds.contains(profile.uid)) {
-        leftSwipedUsers.add(profile);
-      }
-    }
-
-    for (var profile in otherProfiles) {
-      bool isClose = distanceDifference(
-              currentUserProfile.latitude,
-              currentUserProfile.longitude,
-              profile.latitude,
-              profile.longitude) <=
-          30;
-
-      if (!isClose) continue;
-
-      bool sameMajor = isSimilar(currentUserProfile.major, profile.major);
-      bool sameUniversity = isSameUniversity(
-          currentUserProfile.university, profile.university);
-      bool sameSleep = isSimilar(
-          currentUserProfile.sleepSchedule, profile.sleepSchedule);
-
-      if (sameMajor && sameUniversity && sameSleep) {
-        similarProfiles.add(profile);
-      } else {
-        nonSimilarProfiles.add(profile);
-      }
-    }
-
-    List<UserProfile> combinedProfiles = [...similarProfiles, ...nonSimilarProfiles];
-
-    return {
-      "currentUserProfile": currentUserProfile,
-      "otherProfiles": combinedProfiles,
-      "leftSwipedProfiles": leftSwipedUsers,
-    };
   }
+
+  if (currentUserProfile == null) {
+    throw Exception("Current user profile not found in Firestore.");
+  }
+
+  List<UserProfile> leftSwipedUsers = allProfiles
+      .where((profile) => leftSwipedUserIds.contains(profile.uid))
+      .toList();
+
+  // Compute similarity scores
+  List<Map<String, dynamic>> scoredProfiles = [];
+
+  for (var profile in otherProfiles) {
+    double distance = distanceDifference(
+      currentUserProfile.latitude,
+      currentUserProfile.longitude,
+      profile.latitude,
+      profile.longitude,
+    );
+
+    if (distance > 30) continue;
+
+    int score = 0;
+
+    if (isSimilar(currentUserProfile.major, profile.major)) score += 3;
+    if (isSameUniversity(currentUserProfile.university, profile.university)) score += 2;
+    if (isSimilar(currentUserProfile.sleepSchedule, profile.sleepSchedule)) score += 1;
+    if (isSimilar(currentUserProfile.partyOrStudy, profile.partyOrStudy)) score += 1;
+
+    int sharedHobbies = currentUserProfile.hobbies
+        .where((hobby) => profile.hobbies.contains(hobby))
+        .length;
+    score += sharedHobbies;
+
+    scoredProfiles.add({
+      'profile': profile,
+      'score': score,
+    });
+  }
+
+  // Sort by descending similarity score
+  scoredProfiles.sort((a, b) => b['score'].compareTo(a['score']));
+
+  List<UserProfile> prioritizedProfiles = scoredProfiles
+      .map((entry) => entry['profile'] as UserProfile)
+      .toList();
+
+  return {
+    "currentUserProfile": currentUserProfile,
+    "otherProfiles": prioritizedProfiles,
+    "leftSwipedProfiles": leftSwipedUsers,
+  };
+}
 
   Future<void> swipeUser(String swipedUserId) async {
     final currentUserId = _auth.currentUser?.uid;
