@@ -89,43 +89,43 @@ Week 10(Mar.24 - 30)
 - Issue discovered: we have a limited number of api calls(used to create accounts and show profiles)  10 an hour or so. Solution: while in development, just wait it out, this will slow us down but not to a great degree. 
 
 Week 11(Mar.31- April.6)
--PR for swiping feature made
--Discussed chat feature
+- PR for swiping feature made
+- Discussed chat feature
 
 Week 12(April.7 - 13)
--meeting with advisor and all groups, to present how projects are coming along so far. 
--Began work on the creating matches in app, 
--worked on the feature to show profiles.
+- meeting with advisor and all groups, to present how projects are coming along so far. 
+- Began work on the creating matches in app, 
+- worked on the feature to show profiles.
 
 Week 13(April.14 - 20 )
--updated location services, whole group added api key for geocoding
--added ability to view profiles to swipe screen
--Discussed how to appeach welcome page ui
+- updated location services, whole group added api key for geocoding
+- added ability to view profiles to swipe screen
+- Discussed how to appeach welcome page ui
 
 Week 14(April.21 - 27)
--UI for swiping page and welcome screens made
--Discussed weather feature for adding pictures should be added to the account decoration page.
--match list button added to welcome screen
--chat feature stores messages, doesnt automatically show new messages in chat.
+- UI for swiping page and welcome screens made
+- Discussed weather feature for adding pictures should be added to the account decoration page.
+- match list button added to welcome screen
+- chat feature stores messages, doesnt automatically show new messages in chat.
 
 Week 15(April.28 - May.4)
--Discussed what to focus on for the wrap up of the semester, and key points of presentation, as well as deciding on the date. 
--swipe feature updated users can now like each other.
--issue: swipe feature worked on, on outdated branch, fixed by redoing, adding missing logic. 
--issue: firestore rules changed for swiping feature, no when the user logs in they get a message stating they don't have permission, fixed by returning rules to previous state. 
--user now notified when a match happens, instead of just updating database, generic message” 
--matches are automatic, matching algorithm discussed. 
--chat feature finished, along with list of matches. 
+- Discussed what to focus on for the wrap up of the semester, and key points of presentation, as well as deciding on the date. 
+- swipe feature updated users can now like each other.
+- issue: swipe feature worked on, on outdated branch, fixed by redoing, adding missing logic. 
+- issue: firestore rules changed for swiping feature, no when the user logs in they get a message stating they don't have permission, fixed by returning rules to previous state. 
+- user now notified when a match happens, instead of just updating database, generic message” 
+- matches are automatic, matching algorithm discussed. 
+- chat feature finished, along with list of matches. 
 
 Week 16(May.5 - 11)
--Finished powerpoint for final presentation, reviewed it. 
--Issue: with chat pr, conflicts with swiping feature, fixed swipe feature updated. 
--Swipe screen automatic match fixed, shown users with similar profiles. 
--matches made with automatic matches, removed from database.
--added remove chat feature in match list screen
--presented app in engineering building, got more feedback from students.
--notifications feature added using queued messages. 
--ui for match list and chat screen finished
+- Finished powerpoint for final presentation, reviewed it. 
+- Issue: with chat pr, conflicts with swiping feature, fixed swipe feature updated. 
+- Swipe screen automatic match fixed, shown users with similar profiles. 
+- matches made with automatic matches, removed from database.
+- added remove chat feature in match list screen
+- presented app in engineering building, got more feedback from students.
+- notifications feature added using queued messages. 
+- ui for match list and chat screen finished
 
 Week 17(May.12 -18)
 - Databases cleared of testing accounts and testing messages. 
